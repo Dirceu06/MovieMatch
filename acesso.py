@@ -1,0 +1,103 @@
+import streamlit as st
+import requests
+
+st.set_page_config(page_title='acesso',page_icon= ':clapper:')
+
+API_URL = "http://localhost:8000"
+
+if "logado" not in st.session_state:
+    st.session_state.logado = False
+
+if "rota" not in st.session_state:
+    st.session_state.rota = "inicio"
+    
+if st.session_state.logado:
+    st.session_state.rota = 'default'
+
+def tela_inicio():
+    st.title("Bem-vindo",text_alignment='center')
+
+    col1, _,col2 = st.columns([1,0.3,1],vertical_alignment='bottom')
+
+    with col1:
+        if st.button("Já tenho conta",width='stretch'):
+            st.session_state.rota = "login"
+            st.rerun()
+
+    with col2:
+        if st.button("Sou novo",width='stretch'):
+            st.session_state.rota = "cadastro"
+            st.rerun()
+
+def tela_login():
+    st.title("Login",text_alignment='center')
+
+    usuario = st.text_input("Usuário")
+    senha = st.text_input("Senha", type="password")
+
+    col1, _,col2 = st.columns([1,0.3,1],vertical_alignment='bottom')
+    with col1:
+        if st.button("Entrar",width='stretch'):
+            resp = requests.post(
+                f"{API_URL}/login",
+                json={"login": usuario, "senha": senha}
+            )
+
+            if resp.status_code == 200:
+                st.session_state.logado = True
+                st.switch_page('pages/home.py')
+            else:
+                st.error("Login inválido")
+    with col2:
+        if st.button("Voltar",width='stretch'):
+            st.session_state.rota = "inicio"
+            st.rerun()
+
+def tela_cadastro():
+    st.title("Cadastro",text_alignment='center')
+
+    nome = st.text_input("Nome",placeholder='Zézinho')
+    usuario = st.text_input("Usuário")
+    senha = st.text_input("Senha", type="password")
+    adulto =  st.checkbox('adulto?',value=False,width='stretch')
+
+    col1, _,col2 = st.columns([1,0.3,1],vertical_alignment='bottom')
+    erro = None
+    successo = None
+    with col1:
+        if st.button("Cadastrar",width='stretch'):
+            resp = requests.post(
+                f"{API_URL}/cadastro",
+                json={"login": usuario, "senha": senha, 'nome': nome, 'adulto': adulto}
+            )
+
+            if resp.status_code == 200:
+                successo =('Usuario criado, faça login')
+                st.session_state.rota = 'login'
+            else:
+                erro = resp.json().get('detail')
+                
+    with col2:
+        if st.button("Voltar",width='stretch'):
+            st.session_state.rota = "inicio"
+            st.rerun()
+
+    if erro: st.error(erro)
+    if successo: st.success(successo)
+        
+def erro(msg):
+    st.error(msg)
+    
+def tela_default():
+    st.title('Bem-Vindo ao Movie Match',text_alignment='center')
+    st.subheader('use a barra lateral na esquerda para navegação :smile:', text_alignment='center')
+
+# roteamento manual
+if st.session_state.rota == "inicio":
+    tela_inicio()
+elif st.session_state.rota == "login":
+    tela_login()
+elif st.session_state.rota == "cadastro":
+    tela_cadastro()
+elif st.session_state.rota == "default":
+    tela_default()

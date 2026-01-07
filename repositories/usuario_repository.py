@@ -53,9 +53,12 @@ class UsuarioRepository:
         """Insere um novo usuário"""
         cursor = self.db.get_cursor()
         
+        if (not login or login=='') or (not nome or nome=='') or (not senha or senha==''):
+            return [False,'vazio']
+        
         cursor.execute("SELECT 1 FROM usuario WHERE login=%s", (login,))
         if cursor.fetchone():
-            return False
+            return [False,'existe']
         
         cursor.execute("""
             INSERT INTO usuario(login, nome, senha, adulto) 
@@ -63,7 +66,7 @@ class UsuarioRepository:
         """, (login, nome, senha, adulto))
         
         self.db.commit()
-        return True
+        return [True,'ok']
     
     def autenticar_usuario(self, login, senha):
         """Autentica um usuário"""
@@ -72,9 +75,9 @@ class UsuarioRepository:
         
         resultado = cursor.fetchone()
         if not resultado:
-            return False
+            return None
         
-        return resultado['senha'] == senha
+        return {'acesso': resultado['senha'] == senha,'login': login }            
     
     def buscar_info_usuario(self, login):
         """Busca informações básicas do usuário"""
