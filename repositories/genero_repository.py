@@ -5,6 +5,7 @@ class GeneroRepository:
     def __init__(self):
         self.db = Database()
         self.tmdb_service = TMDbService()
+        self.criar_tabela()
     
     def criar_tabela(self):
         """Cria tabela de gêneros se não existir"""

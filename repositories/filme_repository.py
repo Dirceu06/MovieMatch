@@ -3,12 +3,13 @@ from core.databasePB import Database
 class FilmeRepository:
     def __init__(self):
         self.db = Database()
-    
+        self.criar_tabelas()
+        
     def criar_tabelas(self):
         """Cria tabelas relacionadas a filmes"""
         cursor = self.db.get_cursor()
         
-        cursor.executescript("""
+        cursor.execute("""
             CREATE TABLE IF NOT EXISTS filme (
                 id_filme INTEGER PRIMARY KEY
             );

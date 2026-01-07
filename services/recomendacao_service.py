@@ -5,9 +5,9 @@ from services.tmdb_service import TMDbService
 
 class RecomendacaoService:
     def __init__(self):
-        self.usuario_repo = UsuarioRepository()
-        self.filme_repo = FilmeRepository()
         self.genero_repo = GeneroRepository()
+        self.filme_repo = FilmeRepository()
+        self.usuario_repo = UsuarioRepository()
         self.tmdb_service = TMDbService()
     
     def gerar_sugestoes(self, user_genres, user_id, include_adult, limite=20):
@@ -16,7 +16,7 @@ class RecomendacaoService:
         sugestoes = []
         
         for genero in user_genres:
-            genero_id = genero[0]
+            genero_id = genero['id_genero']
             page = self.usuario_repo.get_feed_page(user_id, genero_id)
             
             # Busca filmes do TMDb

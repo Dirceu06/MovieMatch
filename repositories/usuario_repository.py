@@ -3,7 +3,8 @@ from core.databasePB import Database
 class UsuarioRepository:
     def __init__(self):
         self.db = Database()
-    
+        self.criar_tabelas()
+        
     def criar_tabelas(self):
         """Cria todas as tabelas relacionadas a usuários"""
         cursor = self.db.get_cursor()
@@ -73,7 +74,7 @@ class UsuarioRepository:
         if not resultado:
             return False
         
-        return resultado[0] == senha
+        return resultado['senha'] == senha
     
     def buscar_info_usuario(self, login):
         """Busca informações básicas do usuário"""

@@ -9,7 +9,6 @@ class UserAtual:
         self.nome=''
         self.gen=list()
     
-
 def LoginECadastro(user_repo: UsuarioRepository):
     try:
         primeira = int(input('Escolha um opção\n1 - cadastro\n2 - login\n'))
@@ -55,14 +54,14 @@ def CapturarGostos(userID, gen_repo: GeneroRepository):
     
     print("agora que generos lhe agradam? ")
     for g in gen:
-        print(f'ID: {g[0]} nome: {g[1]}')
+        print(f'ID: {g['id']} nome: {g['name']}')
 
     genLikes = input('Dos generos acima liste por ID quais lhe agrada: (ex: x,y,z,a,b...) ')
     genLikes=genLikes.strip().split(',')
-    bd.usuario_genero(userID,genLikes)
+    user_repo.associar_generos_usuario(userID,genLikes)
                  
-def ExibirAvaliarFilme(userGen,userID,userOpn):
-    sugestao = bd.gerarSujestao(userGen,userID,userOpn)
+def ExibirAvaliarFilme(userGen, userID, userAdulto, sugest_service: RecomendacaoService):
+    sugestao = sugest_service.gerar_sugestoes(userGen, userID, userAdulto, limite=5)
     print('\n\nAvalie as sugestões\n')
     for s in sugestao:
         sID=s['id']
@@ -79,20 +78,20 @@ def ExibirAvaliarFilme(userGen,userID,userOpn):
             except:
                 print('resposta inválida')
         
-        bd.usuario_filme(userID,sID,sGenID,opn)
+        sugest_service.avaliar_filme(userID,sID,sGenID,opn)
 
 user = UserAtual()
-user_repo = UsuarioRepository()
-genero_repo = GeneroRepository()
 recomenda_service = RecomendacaoService()
+genero_repo = GeneroRepository()
+user_repo = UsuarioRepository()
 
 login=False
 
-while not login: login,user.login=LoginECadastro()
+while not login: login,user.login=LoginECadastro(user_repo)
     
-user.nome,user.adulto = user_repo.buscar_info_usuario()
+user.nome,user.adulto = user_repo.buscar_info_usuario(user.login)
 
-CapturarGostos(user.login)
+CapturarGostos(user.login, genero_repo)
 user.gen = genero_repo.buscar_por_usuario(user.login)
 
-ExibirAvaliarFilme(user.gen,user.login,user.adulto)
+ExibirAvaliarFilme(user.gen,user.login,user.adulto,recomenda_service)
