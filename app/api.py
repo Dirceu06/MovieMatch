@@ -21,6 +21,10 @@ class cadastro(BaseModel):
     senha: str
     adulto: bool
     
+class Gostos(BaseModel):
+    gen_list: list
+    
+    
 user = UserAtual()
 app = FastAPI()
 recomenda_service = RecomendacaoService()
@@ -35,6 +39,9 @@ def login(dados: Login):
     if not passe or not passe.get("acesso"):
         raise HTTPException(status_code=401, detail="login inválido")
     
+    user.login=dados.login
+    
+        
     return {'ok': passe['acesso'], 'usuario': passe['login']}
 
 @app.post('/cadastro')
@@ -45,3 +52,16 @@ def cadastrar(dados: cadastro):
         raise HTTPException(status_code=401, detail=f"login {passe[1]}")
     
     return True
+
+@app.post('/genero')
+def generosTMDB():
+    return genero_repo.carregar_generos_tmdb()
+
+@app.post('/salvagostos')
+def salvar_generos_usuario(gen_list: Gostos):
+    user_repo.associar_generos_usuario(user.login,gen_list.gen_list)
+    return True
+    
+@app.get('/carregargostosusuario')
+def carregar_gosto_usuario():
+    return genero_repo.buscar_por_usuario(user.login)

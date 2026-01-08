@@ -1,9 +1,10 @@
 import streamlit as st
 import requests
-
+from core.config import Config
+API_URL = Config.API_URL
 st.set_page_config(page_title='acesso',page_icon= ':clapper:')
 
-API_URL = "http://localhost:8000"
+
 
 if "logado" not in st.session_state:
     st.session_state.logado = False
@@ -34,7 +35,8 @@ def tela_login():
 
     usuario = st.text_input("Usuário")
     senha = st.text_input("Senha", type="password")
-
+    erro = None
+    successo = None
     col1, _,col2 = st.columns([1,0.3,1],vertical_alignment='bottom')
     with col1:
         if st.button("Entrar",width='stretch'):
@@ -47,12 +49,16 @@ def tela_login():
                 st.session_state.logado = True
                 st.switch_page('pages/home.py')
             else:
-                st.error("Login inválido")
+                erro="Login inválido"
     with col2:
         if st.button("Voltar",width='stretch'):
             st.session_state.rota = "inicio"
+            successo = 'Login válido'
             st.rerun()
 
+    if erro: st.error(erro)
+    if successo: st.success(successo)
+     
 def tela_cadastro():
     st.title("Cadastro",text_alignment='center')
 

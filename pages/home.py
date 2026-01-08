@@ -1,21 +1,68 @@
+from core.config import Config
+API_URL = Config.API_URL
 import streamlit as st
+import requests
+
 st.set_page_config('Inicio', ':clapper:')
 
-if not st.session_state.get("logado"):
-    st.switch_page("acesso.py")
+if not st.session_state.get("logado"): st.switch_page("acesso.py")
+if "genlist" not in st.session_state:  st.session_state.genlist = []
 
-st.sidebar.title("Menu")
+def exibir_opinar_filmes():
+    st.success('deu em')
 
-st.sidebar.button("Dashboard",width='stretch')
-st.sidebar.button("Perfil",width='stretch')
-
-# empurra tudo pra cima
-st.sidebar.markdown("<br>" * 8, unsafe_allow_html=True)
-
-if st.sidebar.button("Logout", width='stretch'):
+def sair():
     st.session_state.clear()
     st.switch_page("acesso.py")
+    
+def generos_like(gen_id):
+    if gen_id in st.session_state.genlist:
+        st.session_state.genlist.remove(gen_id)
+    else:
+        st.session_state.genlist.append(gen_id)
+    
+@st.cache_data
+def buscar_generos():
+    return requests.post(f'{API_URL}/genero').json()
 
+@st.cache_data
+def carregar_gosto():
+    return requests.get(f'{API_URL}/carregargostosusuario').json()
+   
+def salvar_gosto(gen_list: list):
+    requests.post(f'{API_URL}/salvagostos',json={'gen_list': gen_list}).json()
+    st.cache_data.clear()
+    st.rerun()
 
-st.title("Dashboard")
-st.write("Área protegida")
+# config da sidebar
+st.sidebar.title("Menu")
+st.sidebar.button("Match",width='stretch',on_click=exibir_opinar_filmes)
+st.sidebar.button("Perfil",width='stretch')
+st.sidebar.markdown("<br>" * 8, unsafe_allow_html=True)
+st.sidebar.button("Logout", width='stretch', on_click=sair)
+st.title("seus gêneros de interesse",text_alignment="center",width='stretch')
+
+valores = buscar_generos()
+cols = st.columns(3)
+ 
+gostos_atuais = carregar_gosto()
+for g in gostos_atuais:
+    generos_like(g['id_genero'])
+
+#exibir os generos
+for i, genero in enumerate(valores):
+    selecionado = genero["id"] in st.session_state.genlist
+    with cols[i%3]:
+        marcado = st.checkbox(
+                genero['name'],
+                value=selecionado,
+                key=f"gen_{genero['id']}"
+            )
+
+    if marcado and genero["id"] not in st.session_state.genlist:
+        st.session_state.genlist.append(genero["id"])
+
+    if not marcado and genero["id"] in st.session_state.genlist:
+        st.session_state.genlist.remove(genero["id"])
+
+st.button('Pronto',width='stretch',on_click=salvar_gosto,args=(st.session_state.genlist,))

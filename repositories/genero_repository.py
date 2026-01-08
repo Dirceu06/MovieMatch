@@ -42,9 +42,8 @@ class GeneroRepository:
         """Busca gêneros associados a um usuário"""
         cursor = self.db.get_cursor()
         cursor.execute("""
-            SELECT g.* FROM genero g
-            INNER JOIN usuario_genero ug ON g.id_genero = ug.id_genero
-            WHERE ug.login = %s
+            SELECT id_genero FROM usuario_genero
+            WHERE login = %s
         """, (user_id,))
         return cursor.fetchall()
     
