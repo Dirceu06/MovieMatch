@@ -1,16 +1,18 @@
 from repositories.usuario_repository import UsuarioRepository
 from repositories.genero_repository import GeneroRepository
 from services.recomendacao_service import RecomendacaoService
+from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 from fastapi import FastAPI, HTTPException
 
-class UserAtual:
-    def __init__(self):
-        self.login=''
-        self.adulto=False
-        self.nome=''
-        self.gen=list()
-        
+class Basico(BaseModel):
+    login: str
+
+class Basico2(BaseModel):
+    login: str
+    gen: list
+    adulto: bool
+    
 class Login(BaseModel):
     login: str
     senha: str
@@ -22,15 +24,13 @@ class cadastro(BaseModel):
     adulto: bool
     
 class Gostos(BaseModel):
+    login: str
     gen_list: list
     
-    
-user = UserAtual()
 app = FastAPI()
 recomenda_service = RecomendacaoService()
 genero_repo = GeneroRepository()
 user_repo = UsuarioRepository()
-
 
 @app.post('/login')
 def login(dados: Login):
@@ -38,9 +38,6 @@ def login(dados: Login):
     
     if not passe or not passe.get("acesso"):
         raise HTTPException(status_code=401, detail="login inválido")
-    
-    user.login=dados.login
-    
         
     return {'ok': passe['acesso'], 'usuario': passe['login']}
 
@@ -59,9 +56,25 @@ def generosTMDB():
 
 @app.post('/salvagostos')
 def salvar_generos_usuario(gen_list: Gostos):
-    user_repo.associar_generos_usuario(user.login,gen_list.gen_list)
-    return True
+    print(gen_list)
+    try:
+        user_repo.associar_generos_usuario(gen_list.login, gen_list.gen_list)
+        return JSONResponse(content={"success": True, "message": "Gêneros salvos com sucesso"})
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Erro ao salvar gêneros: {str(e)}")
     
-@app.get('/carregargostosusuario')
-def carregar_gosto_usuario():
-    return genero_repo.buscar_por_usuario(user.login)
+@app.post('/carregargostosusuario')
+def carregar_gosto_usuario(user: Basico):
+    resultado= genero_repo.buscar_por_usuario(user.login)
+    res = list()
+    for r in resultado:
+        res.append(r['id_genero'])
+    return resultado
+
+@app.post('/sugestoes')
+def carregar_sugestoes(user:Basico2):
+    return recomenda_service.gerar_sugestoes(user.gen,user.login,user.adulto)
+
+@app.post('/infos')
+def infosUser(user: Basico):
+    return user_repo.buscar_info_usuario(user.login)

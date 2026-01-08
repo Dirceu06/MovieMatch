@@ -4,8 +4,6 @@ from core.config import Config
 API_URL = Config.API_URL
 st.set_page_config(page_title='acesso',page_icon= ':clapper:')
 
-
-
 if "logado" not in st.session_state:
     st.session_state.logado = False
 
@@ -47,7 +45,13 @@ def tela_login():
 
             if resp.status_code == 200:
                 st.session_state.logado = True
-                st.switch_page('pages/home.py')
+                login = usuario
+                infos =  requests.post(f'{API_URL}/infos',json={'login':login}).json()
+                nome, adulto = infos['nome'],infos['adulto']
+                gen = requests.post(f'{API_URL}/carregargostosusuario',json={'login':login}).json()
+        
+                st.session_state.user = {"nome": nome, "login": login, "adulto": adulto, "gen": gen}
+                st.switch_page('pages/generos.py')
             else:
                 erro="Login inválido"
     with col2:

@@ -69,4 +69,4 @@ class FilmeRepository:
             (user_id,)
         )
         
-        return [row[0] for row in cursor.fetchall()]
+        return [row for row in cursor.fetchall()]

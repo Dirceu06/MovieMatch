@@ -8,6 +8,8 @@ st.set_page_config('Inicio', ':clapper:')
 if not st.session_state.get("logado"): st.switch_page("acesso.py")
 if "genlist" not in st.session_state:  st.session_state.genlist = []
 
+
+
 def exibir_opinar_filmes():
     st.success('deu em')
 
@@ -16,10 +18,10 @@ def sair():
     st.switch_page("acesso.py")
     
 def generos_like(gen_id):
-    if gen_id in st.session_state.genlist:
-        st.session_state.genlist.remove(gen_id)
+    if gen_id['id_genero'] in st.session_state.genlist:
+        st.session_state.genlist.remove(gen_id['id_genero'])
     else:
-        st.session_state.genlist.append(gen_id)
+        st.session_state.genlist.append(gen_id['id_genero'])
     
 @st.cache_data
 def buscar_generos():
@@ -27,10 +29,10 @@ def buscar_generos():
 
 @st.cache_data
 def carregar_gosto():
-    return requests.get(f'{API_URL}/carregargostosusuario').json()
+    return st.session_state.user['gen']
    
 def salvar_gosto(gen_list: list):
-    requests.post(f'{API_URL}/salvagostos',json={'gen_list': gen_list}).json()
+    resposta = requests.post(f'{API_URL}/salvagostos',json={'login': st.session_state.user['login'],'gen_list': gen_list}).json()
     st.cache_data.clear()
     st.rerun()
 
@@ -47,7 +49,7 @@ cols = st.columns(3)
  
 gostos_atuais = carregar_gosto()
 for g in gostos_atuais:
-    generos_like(g['id_genero'])
+    generos_like(g)
 
 #exibir os generos
 for i, genero in enumerate(valores):
@@ -58,7 +60,6 @@ for i, genero in enumerate(valores):
                 value=selecionado,
                 key=f"gen_{genero['id']}"
             )
-
     if marcado and genero["id"] not in st.session_state.genlist:
         st.session_state.genlist.append(genero["id"])
 

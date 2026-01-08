@@ -1,4 +1,5 @@
 from core.databasePB import Database
+from psycopg2 import errors
 
 class UsuarioRepository:
     def __init__(self):
@@ -47,6 +48,52 @@ class UsuarioRepository:
             );
         """)
         
+           # Cria a função da trigger
+        cursor.execute("""
+            CREATE OR REPLACE FUNCTION incrementar_pagina_genero()
+            RETURNS TRIGGER AS $$
+            DECLARE
+                generos_filme INTEGER[];
+                genero_id INTEGER;
+                contagem INTEGER;
+            BEGIN
+                -- Busca os gêneros do filme que foi avaliado
+                SELECT array_agg(fg.id_genero) INTO generos_filme
+                FROM filmes_genero fg
+                WHERE fg.id_filme = NEW.id_filme;
+                
+                -- Para cada gênero do filme
+                FOREACH genero_id IN ARRAY generos_filme
+                LOOP
+                    -- Conta quantos filmes com esse gênero o usuário já avaliou
+                    SELECT COUNT(DISTINCT uf.id_filme) INTO contagem
+                    FROM usuario_filme uf
+                    JOIN filmes_genero fg ON uf.id_filme = fg.id_filme
+                    WHERE uf.login = NEW.login
+                    AND fg.id_genero = genero_id;
+                    
+                    -- Se atingiu 20 filmes, incrementa a página
+                    IF contagem >= 20 THEN
+                        UPDATE usuario_genero_feed
+                        SET page = page + 1
+                        WHERE login = NEW.login
+                        AND id_genero = genero_id;
+                    END IF;
+                END LOOP;
+                
+                RETURN NEW;
+            END;
+            $$ LANGUAGE plpgsql;
+        """)
+        
+        # Cria a trigger
+        cursor.execute("""
+            DROP TRIGGER IF EXISTS trigger_incrementar_pagina ON usuario_filme;
+            CREATE TRIGGER trigger_incrementar_pagina
+            AFTER INSERT OR UPDATE ON usuario_filme
+            FOR EACH ROW
+            EXECUTE FUNCTION incrementar_pagina_genero();
+        """)
         self.db.commit()
     
     def inserir_usuario(self, login, nome, senha, adulto):
@@ -83,23 +130,39 @@ class UsuarioRepository:
         """Busca informações básicas do usuário"""
         cursor = self.db.get_cursor()
         cursor.execute("SELECT nome, adulto FROM usuario WHERE login=%s", (login,))
-        return cursor.fetchone()
+        res = cursor.fetchone()
+        print(res)
+        return res
     
     def associar_generos_usuario(self, user_id, generos_ids):
         """Associa gêneros a um usuário"""
         cursor = self.db.get_cursor()
         
-        for genero_id in generos_ids:
-            try:
-                genero_id = int(genero_id)
-                cursor.execute(
-                    "INSERT into usuario_genero(login, id_genero) VALUES(%s,%s) ON CONFLICT (login, id_genero) DO NOTHING",
-                    (user_id, genero_id)
-                )
-            except ValueError:
-                continue
-        
-        self.db.commit()
+        try:
+            #deleta todos os gêneros anteriores do usuário
+            cursor.execute("DELETE FROM usuario_genero WHERE login = %s", (user_id,))
+            
+            for genero_id in generos_ids:
+                try:
+                    genero_id = int(genero_id)
+                    cursor.execute(
+                        "INSERT INTO usuario_genero(login, id_genero) VALUES(%s,%s)",
+                        (user_id, genero_id)
+                    )
+                except ValueError:
+                    continue  
+                except errors.UniqueViolation:
+                    
+                    cursor.execute(
+                        "INSERT INTO usuario_genero(login, id_genero) VALUES(%s,%s) ON CONFLICT (login, id_genero) DO NOTHING",
+                        (user_id, genero_id)
+                    )
+            
+            self.db.commit()
+            
+        except Exception as e:
+            self.db.connection.rollback()  
+            raise e  
     
     def get_feed_page(self, user_id, genero_id):
         """Obtém a página atual do feed do usuário para um gênero"""
@@ -110,8 +173,9 @@ class UsuarioRepository:
         """, (user_id, genero_id))
         
         row = cursor.fetchone()
-        if row:
-            return row[0]
+        print(row)
+        if row is not None:
+            return row
         
         # Se não existir, cria registro com página 1
         cursor.execute("""

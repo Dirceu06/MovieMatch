@@ -10,41 +10,52 @@ class RecomendacaoService:
         self.usuario_repo = UsuarioRepository()
         self.tmdb_service = TMDbService()
     
-    def gerar_sugestoes(self, user_genres, user_id, include_adult, limite=20):
+    def gerar_sugestoes(self, user_genres, user_id, include_adult:bool, limite=20):
         """Gera sugestões de filmes baseadas nos gêneros do usuário"""
-        filmes_vistos = set(self.filme_repo.buscar_filmes_vistos(user_id))
-        sugestoes = []
+        vistos = self.filme_repo.buscar_filmes_vistos(user_id)
         
+        filmes_excluidos = list()
+        for i in vistos:
+            filmes_excluidos.append(i['id_filme'])
+        filmes_excluidos = set(filmes_excluidos)
+        
+        lista_intermediaria = list() #cada indice uma lista de 20 por genero
+        lista_final = list()
         for genero in user_genres:
-            genero_id = genero['id_genero']
-            page = self.usuario_repo.get_feed_page(user_id, genero_id)
-            
-            # Busca filmes do TMDb
-            resultado = self.tmdb_service.discover_movies(
-                genero_id=genero_id,
-                page=page,
-                include_adult=include_adult
-            )
-            
-            filmes = resultado.get("results", [])
-            
-            # Filtra filmes não vistos
-            for filme in filmes:
-                if filme["id"] not in filmes_vistos:
-                    sugestoes.append(filme)
-                    filmes_vistos.add(filme["id"])
-                    
-                    if len(sugestoes) >= limite:
-                        break
-            
-            # Avança página se necessário
-            if len(filmes) == 20:  # Página cheia
-                self.usuario_repo.avancar_feed_page(user_id, genero_id)
-            
-            if len(sugestoes) >= limite:
-                break
+            lista_atual = list()
+            atendido=False
+            try:
+                page = self.usuario_repo.get_feed_page(user_id, genero)['page']
+            except:
+                page=1
+            totalPag=1
+            while not atendido:
+                resultado = self.tmdb_service.discover_movies(
+                    genero_id=genero,
+                    page=page,
+                    include_adult=include_adult
+                )
+                filmes = resultado.get("results", [])
+                qtdPage= resultado.get('total_pages')
+                totalPag = qtdPage
+                for filme in filmes:
+                    if filme['overview']=='': continue
+                    if filme["id"] not in filmes_excluidos:
+                        lista_atual.append(filme)
+                        filmes_excluidos.add(filme["id"])
+                        
+                if len(lista_atual)>=20 or page > totalPag:
+                    atendido=True          
+                else: page = page + 1
+            lista_intermediaria.append(lista_atual)
         
-        return sugestoes
+        for i in range(0,20):
+            for j in range(0,len(lista_intermediaria)):
+                if len(lista_final)>=20: break
+                lista_final.append(lista_intermediaria[j][i])
+                
+             
+        return lista_final
     
     def avaliar_filme(self, user_id, filme_id, filme_generos, opiniao):
         """Registra avaliação de um filme"""

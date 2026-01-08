@@ -45,7 +45,9 @@ class GeneroRepository:
             SELECT id_genero FROM usuario_genero
             WHERE login = %s
         """, (user_id,))
-        return cursor.fetchall()
+        resultado = cursor.fetchall()
+       
+        return resultado
     
     def buscar_por_filme(self,filme_id):
         """Busca gêneros associados a um filme"""
