@@ -131,7 +131,7 @@ class UsuarioRepository:
         cursor = self.db.get_cursor()
         cursor.execute("SELECT nome, adulto FROM usuario WHERE login=%s", (login,))
         res = cursor.fetchone()
-        print(res)
+        print('linha 134 usuario_repo',res)
         return res
     
     def associar_generos_usuario(self, user_id, generos_ids):
@@ -173,7 +173,6 @@ class UsuarioRepository:
         """, (user_id, genero_id))
         
         row = cursor.fetchone()
-        print(row)
         if row is not None:
             return row
         

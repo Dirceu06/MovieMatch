@@ -56,7 +56,6 @@ def generosTMDB():
 
 @app.post('/salvagostos')
 def salvar_generos_usuario(gen_list: Gostos):
-    print(gen_list)
     try:
         user_repo.associar_generos_usuario(gen_list.login, gen_list.gen_list)
         return JSONResponse(content={"success": True, "message": "Gêneros salvos com sucesso"})

@@ -3,25 +3,18 @@ API_URL = Config.API_URL
 import streamlit as st
 import requests
 
-st.set_page_config('Inicio', ':clapper:')
+st.set_page_config('Inicio', ':clapper:',layout='centered')
 
 if not st.session_state.get("logado"): st.switch_page("acesso.py")
 if "genlist" not in st.session_state:  st.session_state.genlist = []
-
-
 
 def exibir_opinar_filmes():
     st.success('deu em')
 
 def sair():
     st.session_state.clear()
+    st.cache_data.clear()
     st.switch_page("acesso.py")
-    
-def generos_like(gen_id):
-    if gen_id['id_genero'] in st.session_state.genlist:
-        st.session_state.genlist.remove(gen_id['id_genero'])
-    else:
-        st.session_state.genlist.append(gen_id['id_genero'])
     
 @st.cache_data
 def buscar_generos():
@@ -29,14 +22,17 @@ def buscar_generos():
 
 @st.cache_data
 def carregar_gosto():
+    st.session_state.genlist = st.session_state.user['gen']
+        
     return st.session_state.user['gen']
    
 def salvar_gosto(gen_list: list):
-    resposta = requests.post(f'{API_URL}/salvagostos',json={'login': st.session_state.user['login'],'gen_list': gen_list}).json()
+    requests.post(f'{API_URL}/salvagostos',json={'login': st.session_state.user['login'],'gen_list': gen_list}).json()
     st.cache_data.clear()
-    st.rerun()
+    if "mudou_gen" not in st.session_state: st.session_state.mudou_gen = True
+    st.session_state.mudou_gen = True
+    
 
-# config da sidebar
 st.sidebar.title("Menu")
 st.sidebar.button("Match",width='stretch',on_click=exibir_opinar_filmes)
 st.sidebar.button("Perfil",width='stretch')
@@ -48,12 +44,10 @@ valores = buscar_generos()
 cols = st.columns(3)
  
 gostos_atuais = carregar_gosto()
-for g in gostos_atuais:
-    generos_like(g)
 
 #exibir os generos
 for i, genero in enumerate(valores):
-    selecionado = genero["id"] in st.session_state.genlist
+    selecionado = genero["id"] in st.session_state.user['gen']
     with cols[i%3]:
         marcado = st.checkbox(
                 genero['name'],
@@ -67,3 +61,4 @@ for i, genero in enumerate(valores):
         st.session_state.genlist.remove(genero["id"])
 
 st.button('Pronto',width='stretch',on_click=salvar_gosto,args=(st.session_state.genlist,))
+

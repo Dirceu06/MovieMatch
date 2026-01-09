@@ -2,7 +2,7 @@ import streamlit as st
 import requests
 from core.config import Config
 API_URL = Config.API_URL
-st.set_page_config(page_title='acesso',page_icon= ':clapper:')
+st.set_page_config(page_title='acesso',page_icon= ':clapper:',layout='centered')
 
 if "logado" not in st.session_state:
     st.session_state.logado = False
@@ -35,7 +35,7 @@ def tela_login():
     senha = st.text_input("Senha", type="password")
     erro = None
     successo = None
-    col1, _,col2 = st.columns([1,0.3,1],vertical_alignment='bottom')
+    col1, col2 = st.columns([1,1],vertical_alignment='bottom')
     with col1:
         if st.button("Entrar",width='stretch'):
             resp = requests.post(
@@ -49,8 +49,10 @@ def tela_login():
                 infos =  requests.post(f'{API_URL}/infos',json={'login':login}).json()
                 nome, adulto = infos['nome'],infos['adulto']
                 gen = requests.post(f'{API_URL}/carregargostosusuario',json={'login':login}).json()
-        
-                st.session_state.user = {"nome": nome, "login": login, "adulto": adulto, "gen": gen}
+                genFinal = list()
+                for g in gen:
+                    genFinal.append(g['id_genero'])
+                st.session_state.user = {"nome": nome, "login": login, "adulto": adulto, "gen": genFinal}
                 st.switch_page('pages/generos.py')
             else:
                 erro="Login inválido"

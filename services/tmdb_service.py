@@ -19,11 +19,12 @@ class TMDbService:
         url = f"{Config.TMDB_BASE_URL}/discover/movie"
         
         params = {
-            "include_adult": include_adult,
+            "include_adult": False,
             "include_video": False,
             "language": Config.LANGUAGE,
             "page": page,
-            "sort_by": "popularity.desc"
+            "sort_by": "vote_average.desc",
+            "vote_count.gte": 300
         }
         
         if genero_id:

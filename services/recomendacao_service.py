@@ -39,14 +39,16 @@ class RecomendacaoService:
                 qtdPage= resultado.get('total_pages')
                 totalPag = qtdPage
                 for filme in filmes:
-                    if filme['overview']=='': continue
+                    if filme['overview'] == '': continue
                     if filme["id"] not in filmes_excluidos:
                         lista_atual.append(filme)
                         filmes_excluidos.add(filme["id"])
                         
                 if len(lista_atual)>=20 or page > totalPag:
                     atendido=True          
-                else: page = page + 1
+                else: 
+                    page = page + 1
+                    print(page)
             lista_intermediaria.append(lista_atual)
         
         for i in range(0,20):
