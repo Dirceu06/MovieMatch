@@ -1,24 +1,28 @@
 import psycopg2
 from psycopg2.extras import RealDictCursor
 from psycopg2 import errors
-
 import os
+from dotenv import load_dotenv
+
+# CARREGUE AS VARIÁVEIS DE AMBIENTE AQUI, NO TOPO DO ARQUIVO
+load_dotenv()
 
 class Database:
     def __init__(
         self,
-        host=os.getenv("DB_HOST"),
-        database=os.getenv("DB_NAME"),
-        user=os.getenv("DB_USER"),
-        password=os.getenv("DB_PASSWORD"),
-        port=os.getenv("DB_PORT")
+        host=None,
+        database=None,
+        user=None,
+        password=None,
+        port=None
     ):
         self.config = {
-            "host": host,
-            "dbname": database,
-            "user": user,
-            "password": password,
-            "port": port,
+            'host':os.getenv("DB_HOST"),
+            'database':os.getenv("DB_NAME"),
+            'user':os.getenv("DB_USER"),
+            'password':os.getenv("DB_PASSWORD"),
+            'port':os.getenv("DB_PORT")
+            
         }
         self.connection = None
 
