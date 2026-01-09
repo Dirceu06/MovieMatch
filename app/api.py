@@ -26,6 +26,12 @@ class cadastro(BaseModel):
 class Gostos(BaseModel):
     login: str
     gen_list: list
+   
+class Avaliar(BaseModel):
+    filme_id: int
+    filme_gen: list
+    login: str
+    avaliacao: bool
     
 app = FastAPI()
 recomenda_service = RecomendacaoService()
@@ -77,3 +83,7 @@ def carregar_sugestoes(user:Basico2):
 @app.post('/infos')
 def infosUser(user: Basico):
     return user_repo.buscar_info_usuario(user.login)
+
+@app.post('/avaliar')
+def avaliar(aval: Avaliar):
+    recomenda_service.avaliar_filme(aval.login,aval.filme_id,aval.filme_gen,aval.avaliacao)

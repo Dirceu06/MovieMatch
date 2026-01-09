@@ -48,7 +48,6 @@ class RecomendacaoService:
                     atendido=True          
                 else: 
                     page = page + 1
-                    print(page)
             lista_intermediaria.append(lista_atual)
         
         for i in range(0,20):

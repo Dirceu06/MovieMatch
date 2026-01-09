@@ -10,7 +10,6 @@ if "logado" not in st.session_state:    st.session_state.logado = False
     
 if not st.session_state.get("logado"):  st.switch_page("acesso.py")
 
-@st.cache_data
 def sugestao():
     generos = list()
     for g in st.session_state.genlist:
@@ -24,14 +23,8 @@ def sugestao():
 
     return requests.post(f'{API_URL}/sugestoes', json=dados).json()
 
-
-
-
-
-
-
-
-
+def salvarAvalia(filme_gen,filme_id,filme_aval:bool):
+    requests.post(f"{API_URL}/avaliar",json={'filme_id': filme_id,'filme_gen': filme_gen,'avaliacao': filme_aval, 'login': st.session_state.user['login']})
 
 
 if 'filmes' not in st.session_state: st.session_state.filmes = sugestao()
@@ -74,10 +67,11 @@ with col_info:
     
 col1, col2 = st.columns([1,1])
 with col1:
-    if st.button('Não gostei', use_container_width=True):
+    if st.button('Não gostei', use_container_width=True,on_click=salvarAvalia,args=(f['genre_ids'],f['id'],False)):
         st.session_state.indice += 1
-
+        st.rerun()
 with col2:
-    if st.button('Gostei ou Pretendo ver', use_container_width=True):
+    if st.button('Gostei ou Pretendo ver', use_container_width=True,on_click=salvarAvalia,args=(f['genre_ids'],f['id'],True)):
         st.session_state.indice += 1
+        st.rerun()
         
