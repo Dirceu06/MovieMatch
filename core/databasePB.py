@@ -2,16 +2,16 @@ import psycopg2
 from psycopg2.extras import RealDictCursor
 from psycopg2 import errors
 
-
+import os
 
 class Database:
     def __init__(
         self,
-        host="localhost",
-        database="moviematch",
-        user="postgres",
-        password="admin",
-        port=5432
+        host=os.getenv("DB_HOST"),
+        database=os.getenv("DB_NAME"),
+        user=os.getenv("DB_USER"),
+        password=os.getenv("DB_PASSWORD"),
+        port=os.getenv("DB_PORT")
     ):
         self.config = {
             "host": host,
