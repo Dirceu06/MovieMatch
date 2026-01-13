@@ -33,6 +33,10 @@ class Avaliar(BaseModel):
     login: str
     avaliacao: bool
     
+class Relacionamento(BaseModel):
+    login: str
+    login_amigo: str
+
 app = FastAPI()
 recomenda_service = RecomendacaoService()
 genero_repo = GeneroRepository()
@@ -81,9 +85,30 @@ def carregar_sugestoes(user:Basico2):
     return recomenda_service.gerar_sugestoes(user.gen,user.login,user.adulto)
 
 @app.post('/infos')
-def infosUser(user: Basico):
+def infos_user(user: Basico):
     return user_repo.buscar_info_usuario(user.login)
 
 @app.post('/avaliar')
 def avaliar(aval: Avaliar):
     recomenda_service.avaliar_filme(aval.login,aval.filme_id,aval.filme_gen,aval.avaliacao)
+
+@app.post('/listaramigos')
+def lista_amigos(base: Basico):
+    return user_repo.lista_amigos(base.login)
+
+@app.post('/adicionaramigo')
+def add_amigo(add: Relacionamento):
+    res = user_repo.adicionar_amizade(add.login, add.login_amigo)
+    if res:
+        return {'detail': 'Amigo adicionado'}
+    else:
+        # usuario amigo não existe
+        raise HTTPException(404, detail='Não foi encontrado o amigo')
+    
+@app.post('/excluiramigo')
+def exc_amigo(exc: Relacionamento):
+    return user_repo.remover_amizade(exc.login, exc.login_amigo)
+
+@app.post('/filmescomum')
+def filmes_iguais(exc: Relacionamento):
+    return user_repo.filmes_em_comum(exc.login, exc.login_amigo)

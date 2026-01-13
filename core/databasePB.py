@@ -4,7 +4,6 @@ from psycopg2 import errors
 import os
 from dotenv import load_dotenv
 
-# CARREGUE AS VARIÁVEIS DE AMBIENTE AQUI, NO TOPO DO ARQUIVO
 load_dotenv()
 
 class Database:

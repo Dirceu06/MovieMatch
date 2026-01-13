@@ -1,5 +1,6 @@
 from core.databasePB import Database
 from psycopg2 import errors
+import psycopg2
 
 class UsuarioRepository:
     def __init__(self):
@@ -45,6 +46,16 @@ class UsuarioRepository:
                 PRIMARY KEY (login, id_filme),
                 FOREIGN KEY (login) REFERENCES usuario(login),
                 FOREIGN KEY (id_filme) REFERENCES filme(id_filme)
+            );
+        """)
+        
+        cursor.execute("""
+            CREATE TABLE IF NOT EXISTS usuario_amigo (
+                login TEXT ,
+                login_amigo TEXT ,
+                PRIMARY KEY (login, login_amigo),
+                FOREIGN KEY (login) REFERENCES usuario(login),
+                FOREIGN KEY (login_amigo) REFERENCES usuario(login)
             );
         """)
         
@@ -193,3 +204,48 @@ class UsuarioRepository:
             WHERE login = %s AND id_genero = %s
         """, (user_id, genero_id))
         self.db.commit()
+        
+    def adicionar_amizade(self, user_atual, user_amigo):
+        cursor=self.db.get_cursor()
+        cursor.execute(
+            "SELECT 1 FROM usuario WHERE login=%s",(user_amigo,))
+        
+        res = cursor.fetchone()
+        print(f'linha 214 user_repo, resultado: {res}')
+        if res:
+            # try:
+            cursor.execute(
+                "INSERT INTO usuario_amigo(login, login_amigo) values (%s,%s)",(user_atual,user_amigo))
+            return True
+        else:
+            return False
+        
+    def remover_amizade(self, user_atual, user_amigo):
+        cursor = self.db.get_cursor()
+        cursor.execute(
+            "DELETE FROM usuario_amigo WHERE login=%s AND login_amigo=%s",(user_atual,user_amigo))
+       
+    def lista_amigos(self, user_atual):
+        cursor = self.db.get_cursor()
+        cursor.execute(
+            "SELECT ua.login_amigo, u.nome FROM usuario_amigo AS ua JOIN usuario AS u ON u.login=ua.login_amigo WHERE ua.login=%s",(user_atual,))
+        lista = cursor.fetchall()
+        return lista
+    
+    def filmes_em_comum(self, user_atual, user_amigo):
+        cursor = self.db.get_cursor()
+
+        query = """
+            SELECT 
+                f.id_filme,
+                uf1.avaliacao as avaliacao_usuario,
+                uf2.avaliacao as avaliacao_amigo
+            FROM usuario_filme uf1
+            JOIN usuario_filme uf2 ON uf1.id_filme = uf2.id_filme
+            LEFT JOIN filme f ON uf1.id_filme = f.id_filme
+            WHERE uf1.login = %s
+            AND uf2.login = %s
+            AND uf1.avaliacao = TRUE
+            AND uf2.avaliacao = TRUE;
+        """
+        cursor.execute(query, (user_atual, user_amigo))

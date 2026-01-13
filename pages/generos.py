@@ -33,11 +33,12 @@ def salvar_gosto(gen_list: list):
     st.session_state.mudou_gen = True
     
 
-st.sidebar.title("Menu")
-st.sidebar.button("Match",width='stretch',on_click=exibir_opinar_filmes)
-st.sidebar.button("Perfil",width='stretch')
-st.sidebar.markdown("<br>" * 8, unsafe_allow_html=True)
-st.sidebar.button("Logout", width='stretch', on_click=sair)
+# st.sidebar.title("Menu")
+# st.sidebar.button("Match",width='stretch',on_click=exibir_opinar_filmes)
+# st.sidebar.button("Perfil",width='stretch')
+# st.sidebar.markdown("<br>" * 0, unsafe_allow_html=True)
+# st.sidebar.button("Logout", width='stretch', on_click=sair)
+
 st.title("seus gêneros de interesse",text_alignment="center",width='stretch')
 
 valores = buscar_generos()
