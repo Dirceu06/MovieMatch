@@ -66,3 +66,10 @@ class RecomendacaoService:
         
         # Registra avaliação do usuário
         self.filme_repo.registrar_avaliacao(user_id, filme_id, opiniao)
+
+    def carrgar_filmes_infos(self, IDs: list):
+        carrosel = list()
+        for id in IDs:
+            filmeInfo = self.tmdb_service.get_movie_details(id)
+            if filmeInfo.status_code == 200:
+                carrosel.append(filmeInfo.json())

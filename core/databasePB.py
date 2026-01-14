@@ -40,6 +40,11 @@ class Database:
         if self.connection:
             self.connection.commit()
 
+    def rollback(self):
+        """Faz rollback das alterações"""
+        if self.connection:
+            self.connection.rollback()
+
     def close(self):
         """Fecha a conexão com o banco"""
         if self.connection:

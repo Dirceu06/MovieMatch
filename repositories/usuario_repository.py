@@ -211,14 +211,18 @@ class UsuarioRepository:
             "SELECT 1 FROM usuario WHERE login=%s",(user_amigo,))
         
         res = cursor.fetchone()
-        print(f'linha 214 user_repo, resultado: {res}')
         if res:
-            # try:
-            cursor.execute(
-                "INSERT INTO usuario_amigo(login, login_amigo) values (%s,%s)",(user_atual,user_amigo))
-            return True
+            try:
+                cursor.execute(
+                    "INSERT INTO usuario_amigo(login, login_amigo) values (%s,%s)",(user_atual,user_amigo))
+                self.db.commit()
+                return [True, 'usuário inserido']
+            except:
+                self.db.rollback()
+                return [False, 'vocês já são amigos']
+                
         else:
-            return False
+            return [False, 'amigo inexistente']
         
     def remover_amizade(self, user_atual, user_amigo):
         cursor = self.db.get_cursor()
@@ -237,9 +241,7 @@ class UsuarioRepository:
 
         query = """
             SELECT 
-                f.id_filme,
-                uf1.avaliacao as avaliacao_usuario,
-                uf2.avaliacao as avaliacao_amigo
+                f.id_filme
             FROM usuario_filme uf1
             JOIN usuario_filme uf2 ON uf1.id_filme = uf2.id_filme
             LEFT JOIN filme f ON uf1.id_filme = f.id_filme

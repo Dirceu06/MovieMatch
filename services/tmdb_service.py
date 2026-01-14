@@ -37,4 +37,4 @@ class TMDbService:
         """Busca detalhes de um filme específico"""
         url = f"{Config.TMDB_BASE_URL}/movie/{movie_id}?language={Config.LANGUAGE}"
         response = requests.get(url, headers=self.headers)
-        return response.json()
+        return response

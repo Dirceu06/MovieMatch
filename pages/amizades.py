@@ -26,11 +26,6 @@ tab1, tab2 = st.tabs(["Meus Amigos", "Adicionar Amigos"])
 
 with tab1:
     lista_amigos = buscar_amigos()
-    # if st.button('again'):
-    #     buscar_amigos.clear()
-    #     lista_amigos = buscar_amigos()
-
-    # st.write(lista_amigos)
     
     if not lista_amigos:
         st.info("Você ainda não tem amigos adicionados.")
@@ -41,18 +36,21 @@ with tab1:
                 st.divider()
                 col1, col2, col3 = st.columns([1,3, 1])
                 
-                filmes_comum = requests.post(f'{API_URL}/filmescomum', json={'login': st.session_state.user['login'], 'login_amigo': amigo['login_amigo']}).json()
+                # filmes_comum = requests.post(f'{API_URL}/filmescomum', json={'login': st.session_state.user['login'], 'login_amigo': amigo['login_amigo']}).json()
 
                 with col1:
                     st.image('https://cdn-icons-png.flaticon.com/512/1144/1144760.png')
                 with col2:
                     st.write(f"**{amigo['nome']}**")
-                    if filmes_comum is not None:
-                        st.write(f'Vocês tem {len(filmes_comum)} em comum')
-                    else: 
-                        st.write('Vocês não tem filmes em comum')
+                    # if filmes_comum is not None:
+                    #     st.write(f'Vocês tem {len(filmes_comum)} em comum')
+                    # else: 
+                    #     st.write('Vocês não tem filmes em comum')
                     st.caption(f"@{amigo['login_amigo']}")
                 with col3:
+                    if st.button('Detalhes',key=f"detalhes_{amigo['nome']}",width='stretch'):
+                        
+                        pass
                     if st.button("Excluir",key=f"del_{amigo['nome']}",width='stretch'):
                         ret = requests.post(f"{API_URL}/excluiramigo", 
                             json={'login': st.session_state.user['login'], 'login_amigo': amigo['login_amigo']})
@@ -72,37 +70,24 @@ with tab2:
     
     # Botão de busca
     if st.button("🔍 Buscar Usuário", key="btn_buscar"):
+
         if amigo_login:
             # VALIDAÇÕES
             if amigo_login == st.session_state.user['login']:
                 st.error("Você não pode se adicionar!")
             else:
-                # SIMULA BUSCA (substitua pela API real)
-                st.write(f"### Resultados para '{amigo_login}':")
-                
-                # Exemplo de resultado
-                resultado = {
-                    "login": amigo_login,
-                    "nome": f"Usuário {amigo_login}",
-                    "encontrado": True
-                }
-                
-                if resultado["encontrado"]:
-                    st.divider()
-                    col_info, col_add = st.columns([3, 1])
-                    with col_info:
-                        st.write(f"**Nome:** {resultado['nome']}")
-                        st.write(f"**Login:** {resultado['login']}")
-                    with col_add:
-                        if st.button("➕ Adicionar", key=f"add_{resultado['login']}"):
-                            # API call para adicionar
-                            # response = requests.post(...)
-                            st.success(f"{resultado['nome']} adicionado!")
-                            # Limpa o cache e atualiza
-                            st.cache_data.clear()
-                            amigo_login = ""  # Limpa o input
-                            st.rerun()
+                res = requests.post(f'{API_URL}/adicionaramigo',
+                    json={'login': st.session_state.user['login'], 'login_amigo': amigo_login},timeout=5)
+
+                if res.status_code in [200,409]:
+                    res = res.json()
+                st.write(res)
+                if res['success']:
+                    st.success(f"{amigo_login} adicionado!")
+                    # Limpa o cache e atualiza
+                    st.cache_data.clear()
+                    st.rerun()
                 else:
-                    st.error("Usuário não encontrado!")
+                    st.error(f'ERRO: {res['message']}')
         else:
             st.warning("Digite um login para buscar")

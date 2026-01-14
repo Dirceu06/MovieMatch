@@ -99,11 +99,31 @@ def lista_amigos(base: Basico):
 @app.post('/adicionaramigo')
 def add_amigo(add: Relacionamento):
     res = user_repo.adicionar_amizade(add.login, add.login_amigo)
-    if res:
-        return {'detail': 'Amigo adicionado'}
+    if res[0]:
+        return JSONResponse(
+            status_code=200,
+            content={
+                "success": True,
+                "message": res[1],
+                "data": {
+                    "login": add.login,
+                    "amigo": add.login_amigo
+                }
+            }
+        )
     else:
         # usuario amigo não existe
-        raise HTTPException(404, detail='Não foi encontrado o amigo')
+        return JSONResponse(
+            status_code=409,
+            content={
+                "success": False,
+                "message": res[1],
+                "data": {
+                    "login": add.login,
+                    "amigo": add.login_amigo
+                }
+            }
+        )
     
 @app.post('/excluiramigo')
 def exc_amigo(exc: Relacionamento):
