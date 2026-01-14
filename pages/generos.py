@@ -18,7 +18,7 @@ def sair():
     
 @st.cache_data
 def buscar_generos():
-    return requests.post(f'{API_URL}/genero').json()
+    return requests.get(f'{API_URL}/genero').json()
 
 @st.cache_data
 def carregar_gosto():

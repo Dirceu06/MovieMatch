@@ -5,10 +5,10 @@ from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 from fastapi import FastAPI, HTTPException
 
-class Basico(BaseModel):
+class UserRequest(BaseModel):
     login: str
 
-class Basico2(BaseModel):
+class SugestaoRequest(BaseModel):
     login: str
     gen: list
     adulto: bool
@@ -17,7 +17,7 @@ class Login(BaseModel):
     login: str
     senha: str
     
-class cadastro(BaseModel):
+class CadastroRequest(BaseModel):
     nome: str
     login: str
     senha: str
@@ -52,15 +52,15 @@ def login(dados: Login):
     return {'ok': passe['acesso'], 'usuario': passe['login']}
 
 @app.post('/cadastro')
-def cadastrar(dados: cadastro):
+def cadastrar(dados: CadastroRequest):
     passe = user_repo.inserir_usuario(dados.login,dados.nome,dados.senha,dados.adulto)
     
     if not passe[0]:
         raise HTTPException(status_code=401, detail=f"login {passe[1]}")
     
-    return True
+    return {'success':True}
 
-@app.post('/genero')
+@app.get('/genero')
 def generosTMDB():
     return genero_repo.carregar_generos_tmdb()
 
@@ -73,7 +73,7 @@ def salvar_generos_usuario(gen_list: Gostos):
         raise HTTPException(status_code=500, detail=f"Erro ao salvar gêneros: {str(e)}")
     
 @app.post('/carregargostosusuario')
-def carregar_gosto_usuario(user: Basico):
+def carregar_gosto_usuario(user: UserRequest):
     resultado= genero_repo.buscar_por_usuario(user.login)
     res = list()
     for r in resultado:
@@ -81,19 +81,20 @@ def carregar_gosto_usuario(user: Basico):
     return resultado
 
 @app.post('/sugestoes')
-def carregar_sugestoes(user:Basico2):
+def carregar_sugestoes(user:SugestaoRequest):
     return recomenda_service.gerar_sugestoes(user.gen,user.login,user.adulto)
 
-@app.post('/infos')
-def infos_user(user: Basico):
+@app.get('/infos')
+def infos_user(user: UserRequest):
     return user_repo.buscar_info_usuario(user.login)
 
 @app.post('/avaliar')
 def avaliar(aval: Avaliar):
     recomenda_service.avaliar_filme(aval.login,aval.filme_id,aval.filme_gen,aval.avaliacao)
+    return {"success": True}
 
-@app.post('/listaramigos')
-def lista_amigos(base: Basico):
+@app.get('/listaramigos')
+def lista_amigos(base: UserRequest):
     return user_repo.lista_amigos(base.login)
 
 @app.post('/adicionaramigo')
@@ -129,7 +130,7 @@ def add_amigo(add: Relacionamento):
 def exc_amigo(exc: Relacionamento):
     return user_repo.remover_amizade(exc.login, exc.login_amigo)
 
-@app.post('/filmescomum')
+@app.get('/filmescomum')
 def filmes_iguais(exc: Relacionamento):
     filmesComum =  user_repo.filmes_em_comum(exc.login, exc.login_amigo)
     res = recomenda_service.carrgar_filmes_infos(filmesComum)

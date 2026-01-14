@@ -11,7 +11,7 @@ if not st.session_state.get("logado"):
 @st.cache_data
 def buscar_amigos():
     
-    response = requests.post(
+    response = requests.get(
         f'{API_URL}/listaramigos', 
         json={'login': st.session_state.user['login']},
         timeout=5
