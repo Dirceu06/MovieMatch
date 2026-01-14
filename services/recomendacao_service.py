@@ -73,3 +73,4 @@ class RecomendacaoService:
             filmeInfo = self.tmdb_service.get_movie_details(id)
             if filmeInfo.status_code == 200:
                 carrosel.append(filmeInfo.json())
+        return carrosel

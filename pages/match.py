@@ -65,6 +65,7 @@ with col_info:
     
     st.markdown(f'{f['overview']}')
     
+    
 col1, col2 = st.columns([1,1])
 with col1:
     if st.button('Não gostei', use_container_width=True,on_click=salvarAvalia,args=(f['genre_ids'],f['id'],False)):

@@ -2,3 +2,4 @@ core/config.py
 core/databaseVelho.py
 .env
 .vscode
+*.png

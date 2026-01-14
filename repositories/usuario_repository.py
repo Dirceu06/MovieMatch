@@ -251,3 +251,10 @@ class UsuarioRepository:
             AND uf2.avaliacao = TRUE;
         """
         cursor.execute(query, (user_atual, user_amigo))
+        res = cursor.fetchall()
+        lista= list()
+        
+        for r in res: lista.append(r['id_filme'])
+        
+
+        return lista

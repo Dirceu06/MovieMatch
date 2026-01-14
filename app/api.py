@@ -131,4 +131,6 @@ def exc_amigo(exc: Relacionamento):
 
 @app.post('/filmescomum')
 def filmes_iguais(exc: Relacionamento):
-    return user_repo.filmes_em_comum(exc.login, exc.login_amigo)
+    filmesComum =  user_repo.filmes_em_comum(exc.login, exc.login_amigo)
+    res = recomenda_service.carrgar_filmes_infos(filmesComum)
+    return res

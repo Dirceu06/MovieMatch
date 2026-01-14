@@ -13,6 +13,11 @@ if "rota" not in st.session_state:
 if st.session_state.logado:
     st.session_state.rota = 'default'
 
+def sair():
+    st.session_state.clear()
+    st.cache_data.clear()
+    st.switch_page("acesso.py")
+
 def tela_inicio():
     st.title("Bem-vindo",text_alignment='center')
 
@@ -103,6 +108,12 @@ def erro(msg):
 def tela_default():
     st.title('Bem-Vindo ao Movie Match',text_alignment='center')
     st.subheader('use a barra lateral na esquerda para navegação :smile:', text_alignment='center')
+    st.space('medium')
+    st.markdown('#### Caso deseje sair:',text_alignment='center')
+    _,bt,_ = st.columns([1,1,1])
+    with bt:
+        if st.button('Logout',width='stretch'):
+            sair()
 
 # roteamento manual
 if st.session_state.rota == "inicio":

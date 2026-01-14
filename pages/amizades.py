@@ -36,21 +36,16 @@ with tab1:
                 st.divider()
                 col1, col2, col3 = st.columns([1,3, 1])
                 
-                # filmes_comum = requests.post(f'{API_URL}/filmescomum', json={'login': st.session_state.user['login'], 'login_amigo': amigo['login_amigo']}).json()
-
                 with col1:
                     st.image('https://cdn-icons-png.flaticon.com/512/1144/1144760.png')
                 with col2:
                     st.write(f"**{amigo['nome']}**")
-                    # if filmes_comum is not None:
-                    #     st.write(f'Vocês tem {len(filmes_comum)} em comum')
-                    # else: 
-                    #     st.write('Vocês não tem filmes em comum')
                     st.caption(f"@{amigo['login_amigo']}")
                 with col3:
                     if st.button('Detalhes',key=f"detalhes_{amigo['nome']}",width='stretch'):
+                        st.session_state.amigo = amigo
+                        st.switch_page('pages/perfil_amigo.py')
                         
-                        pass
                     if st.button("Excluir",key=f"del_{amigo['nome']}",width='stretch'):
                         ret = requests.post(f"{API_URL}/excluiramigo", 
                             json={'login': st.session_state.user['login'], 'login_amigo': amigo['login_amigo']})
@@ -60,7 +55,7 @@ with tab1:
                         st.rerun()
 
 with tab2:
-    st.write("### Buscar e adicionar amigos")
+    st.write("### Adicionar amigos")
     
     # Input para buscar
     amigo_login = st.text_input(
@@ -69,7 +64,7 @@ with tab2:
     )
     
     # Botão de busca
-    if st.button("🔍 Buscar Usuário", key="btn_buscar"):
+    if st.button("Adicionar amigo", key="btn_buscar"):
 
         if amigo_login:
             # VALIDAÇÕES
