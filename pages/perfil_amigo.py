@@ -15,7 +15,7 @@ else:
 
     col1, col2 = st.columns([2,4])
     with col1:
-        st.image('foto.png')
+        st.image('assets/perfis/pipoca.png')
     
     with col2: 
         st.title(f'{amigo['nome']}')

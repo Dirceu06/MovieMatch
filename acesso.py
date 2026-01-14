@@ -110,7 +110,7 @@ def tela_default():
     st.subheader('use a barra lateral na esquerda para navegação :smile:', text_alignment='center')
     st.space('medium')
     st.markdown('#### Caso deseje sair:',text_alignment='center')
-    _,bt,_ = st.columns([1,1,1])
+    _, bt, _ = st.columns([1,1,1])
     with bt:
         if st.button('Logout',width='stretch'):
             sair()

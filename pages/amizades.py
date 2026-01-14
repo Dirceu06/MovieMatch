@@ -37,7 +37,7 @@ with tab1:
                 col1, col2, col3 = st.columns([1,3, 1])
                 
                 with col1:
-                    st.image('https://cdn-icons-png.flaticon.com/512/1144/1144760.png')
+                    st.image('assets/perfis/estatueta.png')
                 with col2:
                     st.write(f"**{amigo['nome']}**")
                     st.caption(f"@{amigo['login_amigo']}")
