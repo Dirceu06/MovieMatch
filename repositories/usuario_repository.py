@@ -1,5 +1,6 @@
 from core.databasePB import Database
 from psycopg2 import errors
+import hashlib
 import psycopg2
 
 class UsuarioRepository:
@@ -118,6 +119,8 @@ class UsuarioRepository:
         if cursor.fetchone():
             return [False,'existe']
         
+        
+
         cursor.execute("""
             INSERT INTO usuario(login, nome, senha, adulto) 
             VALUES(%s,%s,%s,%s)
