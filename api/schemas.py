@@ -10,6 +10,7 @@ class SugestaoRequest(BaseModel):
     brasil: bool
     anoINI: int
     anoFIM: int
+    sort: str
     
 class Login(BaseModel):
     login: str

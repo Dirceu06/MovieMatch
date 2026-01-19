@@ -10,7 +10,7 @@ class RecomendacaoService:
         self.usuario_repo = UsuarioRepository()
         self.tmdb_service = TMDbService()
     
-    def gerar_sugestoes(self, user_genres, user_id, include_adult:bool, brasil: bool, anoINI, anoFIM):
+    def gerar_sugestoes(self, user_genres, user_id, include_adult:bool, brasil: bool, anoINI, anoFIM, sort):
         """Gera sugestões de filmes baseadas nos gêneros do usuário"""
         vistos = self.filme_repo.buscar_filmes_vistos(user_id)
         
@@ -36,7 +36,8 @@ class RecomendacaoService:
                     include_adult=include_adult,
                     brasil=brasil,
                     anoINI=anoINI,
-                    anoFIM=anoFIM
+                    anoFIM=anoFIM,
+                    sort=sort
                 )
                 filmes = resultado.get("results", [])
                 qtdPage= resultado.get('total_pages')
@@ -46,9 +47,10 @@ class RecomendacaoService:
                     if filme['overview'] == '': continue
                     if filme["id"] not in filmes_excluidos:
                         lista_atual.append(filme)
+                        print(f'incluido: {filme['title']}')
                         filmes_excluidos.add(filme["id"])
-                    
-
+                    else:
+                        print(f'excluido: {filme['title']}')
                 if len(lista_atual)>=20 or page > totalPag:
                     atendido=True          
                 else: 
@@ -62,7 +64,7 @@ class RecomendacaoService:
                     lista_final.append(lista_intermediaria[j][i])
                 except IndexError:
                     continue
-       
+        
         return lista_final
     
     def avaliar_filme(self, user_id, filme_id, filme_generos, opiniao):

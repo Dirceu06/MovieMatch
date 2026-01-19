@@ -19,6 +19,7 @@ tamanhos = ['w92','w154','w185','w342','w500','w780']
 if "logado" not in st.session_state:    st.session_state.logado = False
 if not st.session_state.get("mudouGen"): st.session_state.mudouGen = False
 if not st.session_state.get("brasileiro"): st.session_state.brasileiro = False
+if not st.session_state.get("sort"): st.session_state.sort = 'popularidade'
 if not st.session_state.get("anoInicio"): st.session_state.anoInicio = 1980
 if not st.session_state.get("anoFim"): st.session_state.anoFim = 2026
 if not st.session_state.get("logado"):  st.switch_page("acesso.py")
@@ -41,6 +42,7 @@ def sugestao():
         'brasil': st.session_state.brasileiro,
         'anoINI': st.session_state.anoInicio,
         'anoFIM': st.session_state.anoFim,
+        'sort':   st.session_state.sort
     }
 
     return requests.post(f'{API_URL}/user/sugestoes', json=dados).json()
@@ -53,9 +55,9 @@ if 'filmes' not in st.session_state: st.session_state.filmes = sugestao()
 if 'indice' not in st.session_state: st.session_state.indice = 0
 
 # --- FILTROS NO TOPO ---
-col_spacer, col_filtros = st.columns([2, 1])
+col_anos, col_sort,col_filtros = st.columns([1, 1, 1])
 
-with col_spacer:
+with col_anos:
     st.markdown("### Filtros")
     st.slider(
         "Intervalo de anos",
@@ -66,8 +68,18 @@ with col_spacer:
         key="filtro_ano",
         on_change=switch_recarregar
     )
-
     st.session_state.anoInicio, st.session_state.anoFim = st.session_state.filtro_ano
+
+with col_sort:
+    st.space('medium')
+    origem = st.selectbox(
+        "Organizar por:",
+        options=["popularidade", "notas"],
+        on_change=switch_recarregar,
+        index = 0 if st.session_state.sort == 'popularidade' else 1
+    )
+    st.session_state.sort = origem
+
 with col_filtros:
     st.space('medium')
     origem = st.selectbox(
@@ -77,6 +89,8 @@ with col_filtros:
         index= 1 if st.session_state.brasileiro else 0
     )
     st.session_state.brasileiro = (origem == "Somente brasileiros")
+
+
 
 if st.session_state.mudouGen or st.session_state.recarregar: 
     st.session_state.filmes = sugestao()
@@ -91,41 +105,46 @@ except IndexError:
     
     st.session_state.filmes = sugestao()
     st.session_state.indice = 0
-    f=st.session_state.filmes[st.session_state.indice]
-    
-poster_url = f'https://image.tmdb.org/t/p/{tamanhos[5]}/{f['poster_path']}'
+    try: 
+        f=st.session_state.filmes[st.session_state.indice]
+    except:
+        st.markdown('### Perdão não achamos filmes com esse filtro',text_alignment='center')
+        st.write(st.session_state.filmes)
+try:
+    poster_url = f'https://image.tmdb.org/t/p/{tamanhos[5]}/{f['poster_path']}'
 
-col_img, col_info = st.columns([1, 3])
+    col_img, col_info = st.columns([1, 3])
 
-with col_img:
-    st.image(poster_url)
+    with col_img:
+        st.image(poster_url)
 
-with col_info:
-    st.markdown(f"# {f['title']}")
-    col_nota, col_data = st.columns(2)
+    with col_info:
+        st.markdown(f"# {f['title']}")
+        col_nota, col_data = st.columns(2)
 
-    with col_nota:
-        st.subheader(f"⭐ {f['vote_average']:.1f}/10")
-        st.write(f'Com {f['vote_count']} votos')
+        with col_nota:
+            st.subheader(f"⭐ {f['vote_average']:.1f}/10")
+            st.write(f'Com {f['vote_count']} votos')
 
-    with col_data:
-        data = f['release_date'].split('-')
-        try: st.subheader(f"📅 {data[2]}/{data[1]}/{data[0]}")
-        except: st.subheader('sem data')
-    st.space(size='small')
-    
-    st.markdown(f'{f['overview']}')
-    
-col1, col2 = st.columns([1,1])
-with col1:
-    if st.button('Não gostei', use_container_width=True,on_click=salvarAvalia,args=(f['genre_ids'],f['id'],False)):
-        st.session_state.indice += 1
-        st.rerun()
-with col2:
-    if st.button('Gostei ou Pretendo ver', use_container_width=True,on_click=salvarAvalia,args=(f['genre_ids'],f['id'],True)):
-        st.session_state.indice += 1
-        st.rerun()
+        with col_data:
+            data = f['release_date'].split('-')
+            try: st.subheader(f"📅 {data[2]}/{data[1]}/{data[0]}")
+            except: st.subheader('sem data')
+        st.space(size='small')
         
-
+        st.markdown(f'{f['overview']}')
+        
+    col1, col2 = st.columns([1,1])
+    with col1:
+        if st.button('Não gostei', use_container_width=True,on_click=salvarAvalia,args=(f['genre_ids'],f['id'],False)):
+            st.session_state.indice += 1
+            st.rerun()
+    with col2:
+        if st.button('Gostei ou Pretendo ver', use_container_width=True,on_click=salvarAvalia,args=(f['genre_ids'],f['id'],True)):
+            st.session_state.indice += 1
+            st.rerun()
+            
+except:
+    pass
 
 
