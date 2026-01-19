@@ -44,16 +44,16 @@ def tela_login():
     with col1:
         if st.button("Entrar",width='stretch'):
             resp = requests.post(
-                f"{API_URL}/login",
+                f"{API_URL}/auth/login",
                 json={"login": usuario, "senha": senha}
             )
 
             if resp.status_code == 200:
                 st.session_state.logado = True
                 login = usuario
-                infos =  requests.get(f'{API_URL}/infos',json={'login':login}).json()
+                infos =  requests.get(f'{API_URL}/user/infos',json={'login':login}).json()
                 nome, adulto = infos['nome'],infos['adulto']
-                gen = requests.post(f'{API_URL}/carregargostosusuario',json={'login':login}).json()
+                gen = requests.post(f'{API_URL}/user/carregargostosusuario',json={'login':login}).json()
                 genFinal = list()
                 for g in gen:
                     genFinal.append(g['id_genero'])
@@ -84,7 +84,7 @@ def tela_cadastro():
     with col1:
         if st.button("Cadastrar",width='stretch'):
             resp = requests.post(
-                f"{API_URL}/cadastro",
+                f"{API_URL}/auth/cadastro",
                 json={"login": usuario, "senha": senha, 'nome': nome, 'adulto': adulto}
             )
 

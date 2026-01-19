@@ -1,8 +1,17 @@
 from fastapi import APIRouter, HTTPException
 from api.schemas import *
-from api.api import  recomenda_service, genero_repo, user_repo
+from api.api import user_repo
 
 auth_router = APIRouter(prefix='/auth', tags=['auth'])
+
+@auth_router.post('/cadastro')
+async def cadastrar(dados: CadastroRequest):
+    passe = user_repo.inserir_usuario(dados.login,dados.nome,dados.senha,dados.adulto)
+    
+    if not passe[0]:
+        raise HTTPException(status_code=401, detail=f"login {passe[1]}")
+    
+    return {'success':True}
 
 @auth_router.post('/login')
 async def login(dados: Login):
@@ -13,11 +22,3 @@ async def login(dados: Login):
         
     return {'ok': passe['acesso'], 'usuario': passe['login']}
 
-@auth_router.post('/cadastro')
-async def cadastrar(dados: CadastroRequest):
-    passe = user_repo.inserir_usuario(dados.login,dados.nome,dados.senha,dados.adulto)
-    
-    if not passe[0]:
-        raise HTTPException(status_code=401, detail=f"login {passe[1]}")
-    
-    return {'success':True}

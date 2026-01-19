@@ -174,7 +174,7 @@ class UsuarioRepository:
             self.db.commit()
             
         except Exception as e:
-            self.db.connection.rollback()  
+            self.db.rollback()  
             raise e  
     
     def get_feed_page(self, user_id, genero_id):

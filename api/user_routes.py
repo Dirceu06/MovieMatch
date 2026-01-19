@@ -28,7 +28,7 @@ async def carregar_gosto_usuario(user: UserRequest):
 
 @user_router.post('/sugestoes')
 async def carregar_sugestoes(user:SugestaoRequest):
-    return recomenda_service.gerar_sugestoes(user.gen,user.login,user.adulto)
+    return recomenda_service.gerar_sugestoes(user.gen,user.login,user.adulto, user.brasil, user.anoINI, user.anoFIM)
 
 @user_router.get('/infos')
 async def infos_user(user: UserRequest):

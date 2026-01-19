@@ -1,7 +1,7 @@
 from repositories.usuario_repository import UsuarioRepository
 from repositories.genero_repository import GeneroRepository
 from services.recomendacao_service import RecomendacaoService
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI
 
 app = FastAPI()
 recomenda_service = RecomendacaoService()

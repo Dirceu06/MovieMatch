@@ -22,7 +22,7 @@ else:
         st.caption(f"@{amigo['login_amigo']}")
 
     st.divider()
-    res = requests.get(f"{API_URL}/filmescomum",
+    res = requests.get(f"{API_URL}/user/filmescomum",
         json={"login": st.session_state.user['login'], 'login_amigo': amigo['login_amigo']}).json()
     if len(res)!=0:
         st.subheader(f'{len(res)} filmes em comum: ')

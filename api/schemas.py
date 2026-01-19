@@ -7,6 +7,9 @@ class SugestaoRequest(BaseModel):
     login: str
     gen: list
     adulto: bool
+    brasil: bool
+    anoINI: int
+    anoFIM: int
     
 class Login(BaseModel):
     login: str

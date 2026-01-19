@@ -12,7 +12,7 @@ if not st.session_state.get("logado"):
 def buscar_amigos():
     
     response = requests.get(
-        f'{API_URL}/listaramigos', 
+        f'{API_URL}/user/listaramigos', 
         json={'login': st.session_state.user['login']},
         timeout=5
     )
@@ -47,7 +47,7 @@ with tab1:
                         st.switch_page('pages/perfil_amigo.py')
                         
                     if st.button("Excluir",key=f"del_{amigo['nome']}",width='stretch'):
-                        ret = requests.post(f"{API_URL}/excluiramigo", 
+                        ret = requests.post(f"{API_URL}/user/excluiramigo", 
                             json={'login': st.session_state.user['login'], 'login_amigo': amigo['login_amigo']})
                         
                         st.success(f"Amigo removido!")
@@ -71,7 +71,7 @@ with tab2:
             if amigo_login == st.session_state.user['login']:
                 st.error("Você não pode se adicionar!")
             else:
-                res = requests.post(f'{API_URL}/adicionaramigo',
+                res = requests.post(f'{API_URL}/user/adicionaramigo',
                     json={'login': st.session_state.user['login'], 'login_amigo': amigo_login},timeout=5)
 
                 if res.status_code in [200,409]:

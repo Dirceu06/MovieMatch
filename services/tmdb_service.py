@@ -14,7 +14,7 @@ class TMDbService:
         response = requests.get(url, headers=self.headers)
         return response.json().get('genres', [])
     
-    def discover_movies(self, genero_id=None, page=1, include_adult=False):
+    def discover_movies(self, genero_id=None, page=1, include_adult=False, brasil= False, anoINI=1980, anoFIM=2026):
         """Busca filmes por gênero"""
         url = f"{Config.TMDB_BASE_URL}/discover/movie"
         
@@ -24,11 +24,17 @@ class TMDbService:
             "language": Config.LANGUAGE,
             "page": page,
             "sort_by": "vote_average.desc",
-            "vote_count.gte": 300
+            "vote_count.gte": 300,
+            "release_date.gte": f"{anoINI}-01-01",
+            "release_date.lte": f"{anoFIM}-12-31"
         }
-        
+         
+        # params["with_genres"] = genero_id
+        if brasil:
+            params['with_origin_country'] = 'BR'
         if genero_id:
             params["with_genres"] = genero_id
+        
         
         response = requests.get(url, headers=self.headers, params=params)
         return response.json()

@@ -10,7 +10,7 @@ class RecomendacaoService:
         self.usuario_repo = UsuarioRepository()
         self.tmdb_service = TMDbService()
     
-    def gerar_sugestoes(self, user_genres, user_id, include_adult:bool, limite=20):
+    def gerar_sugestoes(self, user_genres, user_id, include_adult:bool, brasil: bool, anoINI, anoFIM):
         """Gera sugestões de filmes baseadas nos gêneros do usuário"""
         vistos = self.filme_repo.buscar_filmes_vistos(user_id)
         
@@ -33,17 +33,22 @@ class RecomendacaoService:
                 resultado = self.tmdb_service.discover_movies(
                     genero_id=genero,
                     page=page,
-                    include_adult=include_adult
+                    include_adult=include_adult,
+                    brasil=brasil,
+                    anoINI=anoINI,
+                    anoFIM=anoFIM
                 )
                 filmes = resultado.get("results", [])
                 qtdPage= resultado.get('total_pages')
                 totalPag = qtdPage
+                # for filme in filmes:
                 for filme in filmes:
                     if filme['overview'] == '': continue
                     if filme["id"] not in filmes_excluidos:
                         lista_atual.append(filme)
                         filmes_excluidos.add(filme["id"])
-                        
+                    
+
                 if len(lista_atual)>=20 or page > totalPag:
                     atendido=True          
                 else: 
@@ -53,9 +58,11 @@ class RecomendacaoService:
         for i in range(0,20):
             for j in range(0,len(lista_intermediaria)):
                 if len(lista_final)>=20: break
-                lista_final.append(lista_intermediaria[j][i])
-                
-             
+                try:
+                    lista_final.append(lista_intermediaria[j][i])
+                except IndexError:
+                    continue
+       
         return lista_final
     
     def avaliar_filme(self, user_id, filme_id, filme_generos, opiniao):

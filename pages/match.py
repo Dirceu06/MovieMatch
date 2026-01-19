@@ -3,12 +3,31 @@ import streamlit as st
 from core.config import Config
 API_URL = Config.API_URL
 st.set_page_config(page_title='Match',page_icon= ':clapper:',layout='wide')
+st.markdown("""
+    <style>
+        .stMainBlockContainer {
+            padding-top: 2rem;
+            padding-bottom: 1rem;
+            padding-left: 2rem;
+            padding-right: 2rem;
+        }
+    </style>
+""", unsafe_allow_html=True)
 
 tamanhos = ['w92','w154','w185','w342','w500','w780']
 
 if "logado" not in st.session_state:    st.session_state.logado = False
-    
+if not st.session_state.get("mudouGen"): st.session_state.mudouGen = False
+if not st.session_state.get("brasileiro"): st.session_state.brasileiro = False
+if not st.session_state.get("anoInicio"): st.session_state.anoInicio = 1980
+if not st.session_state.get("anoFim"): st.session_state.anoFim = 2026
 if not st.session_state.get("logado"):  st.switch_page("acesso.py")
+
+if not st.session_state.get("recarregar"): st.session_state.recarregar = False
+
+recarregar = False
+def switch_recarregar():
+    st.session_state.recarregar = True
 
 def sugestao():
     generos = list()
@@ -18,23 +37,55 @@ def sugestao():
     dados = {
         'login': st.session_state.user['login'],
         'gen': generos,
-        'adulto': st.session_state.user['adulto']
+        'adulto': st.session_state.user['adulto'],
+        'brasil': st.session_state.brasileiro,
+        'anoINI': st.session_state.anoInicio,
+        'anoFIM': st.session_state.anoFim,
     }
 
-    return requests.post(f'{API_URL}/sugestoes', json=dados).json()
+    return requests.post(f'{API_URL}/user/sugestoes', json=dados).json()
 
 def salvarAvalia(filme_gen,filme_id,filme_aval:bool):
-    requests.post(f"{API_URL}/avaliar",json={'filme_id': filme_id,'filme_gen': filme_gen,'avaliacao': filme_aval, 'login': st.session_state.user['login']})
-
+    requests.post(f"{API_URL}/user/avaliar",json={'filme_id': filme_id,'filme_gen': filme_gen,'avaliacao': filme_aval, 'login': st.session_state.user['login']})
 
 if 'filmes' not in st.session_state: st.session_state.filmes = sugestao()
 
 if 'indice' not in st.session_state: st.session_state.indice = 0
 
+# --- FILTROS NO TOPO ---
+col_spacer, col_filtros = st.columns([2, 1])
+
+with col_spacer:
+    st.markdown("### Filtros")
+    st.slider(
+        "Intervalo de anos",
+        min_value=1930,
+        max_value=2026,
+        value=(st.session_state.anoInicio, st.session_state.anoFim),
+        step=1,
+        key="filtro_ano",
+        on_change=switch_recarregar
+    )
+
+    st.session_state.anoInicio, st.session_state.anoFim = st.session_state.filtro_ano
+with col_filtros:
+    st.space('medium')
+    origem = st.selectbox(
+        "Origem dos filmes",
+        options=["Todos", "Somente brasileiros"],
+        on_change=switch_recarregar,
+        index= 1 if st.session_state.brasileiro else 0
+    )
+    st.session_state.brasileiro = (origem == "Somente brasileiros")
+
+if st.session_state.mudouGen or st.session_state.recarregar: 
+    st.session_state.filmes = sugestao()
+    st.session_state.indice = 0
+    st.session_state.mudouGen = False
+    st.session_state.recarregar = False
 
 try:
     f=st.session_state.filmes[st.session_state.indice]
-    
     
 except IndexError:
     
@@ -65,7 +116,6 @@ with col_info:
     
     st.markdown(f'{f['overview']}')
     
-    
 col1, col2 = st.columns([1,1])
 with col1:
     if st.button('Não gostei', use_container_width=True,on_click=salvarAvalia,args=(f['genre_ids'],f['id'],False)):
@@ -76,3 +126,6 @@ with col2:
         st.session_state.indice += 1
         st.rerun()
         
+
+
+
