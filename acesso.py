@@ -52,7 +52,7 @@ def tela_login():
                 st.session_state.logado = True
                 login = usuario
                 infos =  requests.get(f'{API_URL}/user/infos',json={'login':login}).json()
-                nome, adulto = infos['nome'],infos['adulto']
+                nome, adulto, descricao, perfil_path = infos['nome'],infos['adulto'], infos['descricao'],infos['perfil_path']
                 gen = requests.post(f'{API_URL}/user/carregargostosusuario',json={'login':login}).json()
                 genFinal = list()
                 for g in gen:

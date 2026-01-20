@@ -8,7 +8,7 @@ st.set_page_config('Amizades', ':clapper:', layout='centered')
 if not st.session_state.get("logado"): 
     st.switch_page("acesso.py")
 
-@st.cache_data
+
 def buscar_amigos():
     
     response = requests.get(

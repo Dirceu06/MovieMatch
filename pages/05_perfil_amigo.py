@@ -15,11 +15,12 @@ else:
 
     col1, col2 = st.columns([2,4])
     with col1:
-        st.image('assets/perfis/pipoca.png')
+        st.image(f'assets/perfis/{amigo['perfil_path']}')
     
     with col2: 
         st.title(f'{amigo['nome']}')
         st.caption(f"@{amigo['login_amigo']}")
+        st.write(f'{amigo['descricao']}')
 
     st.divider()
     res = requests.get(f"{API_URL}/user/filmescomum",

@@ -235,7 +235,7 @@ class UsuarioRepository:
     def lista_amigos(self, user_atual):
         cursor = self.db.get_cursor()
         cursor.execute(
-            "SELECT ua.login_amigo, u.nome FROM usuario_amigo AS ua JOIN usuario AS u ON u.login=ua.login_amigo WHERE ua.login=%s",(user_atual,))
+            "SELECT ua.login_amigo, u.nome, u.descricao, u.perfil_path FROM usuario_amigo AS ua JOIN usuario AS u ON u.login=ua.login_amigo WHERE ua.login=%s",(user_atual,))
         lista = cursor.fetchall()
         return lista
     
