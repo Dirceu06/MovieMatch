@@ -35,3 +35,6 @@ class Avaliar(BaseModel):
 class Relacionamento(BaseModel):
     login: str
     login_amigo: str
+
+class FilmesIdsRequests(BaseModel):
+    filmes_id: list[int]

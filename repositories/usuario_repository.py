@@ -119,7 +119,7 @@ class UsuarioRepository:
         if cursor.fetchone():
             return [False,'existe']
         
-        
+        # CRIPTOGRAFIA AQUI !!!!!!!!!!!!!!!
 
         cursor.execute("""
             INSERT INTO usuario(login, nome, senha, adulto) 
@@ -143,7 +143,7 @@ class UsuarioRepository:
     def buscar_info_usuario(self, login):
         """Busca informações básicas do usuário"""
         cursor = self.db.get_cursor()
-        cursor.execute("SELECT nome, adulto FROM usuario WHERE login=%s", (login,))
+        cursor.execute("SELECT nome, adulto, descricao, perfil_path FROM usuario WHERE login=%s", (login,))
         res = cursor.fetchone()
         return res
     

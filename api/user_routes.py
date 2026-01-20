@@ -2,7 +2,7 @@ from fastapi import APIRouter, HTTPException
 from api.schemas import *
 from fastapi.responses import JSONResponse
 
-from api.api import  recomenda_service, genero_repo, user_repo
+from api.api import  recomenda_service, genero_repo, user_repo, filme_repo
 
 user_router = APIRouter(prefix='/user', tags=['user'])
 
@@ -82,3 +82,13 @@ async def filmes_iguais(exc: Relacionamento):
     filmesComum =  user_repo.filmes_em_comum(exc.login, exc.login_amigo)
     res = recomenda_service.carrgar_filmes_infos(filmesComum)
     return res
+
+@user_router.get('/idfilmesvistos')
+async def filmes_vistos(user: UserRequest):
+    listaVistos = filme_repo.buscar_filmes_vistos(user.login)
+    return listaVistos
+
+@user_router.get('/infosfilmes')
+async def infos_filmes(filmes: FilmesIdsRequests):
+    infosVistos = recomenda_service.carrgar_filmes_infos(filmes.filmes_id)
+    return infosVistos

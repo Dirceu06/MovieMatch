@@ -90,8 +90,6 @@ with col_filtros:
     )
     st.session_state.brasileiro = (origem == "Somente brasileiros")
 
-
-
 if st.session_state.mudouGen or st.session_state.recarregar: 
     st.session_state.filmes = sugestao()
     st.session_state.indice = 0
@@ -101,8 +99,7 @@ if st.session_state.mudouGen or st.session_state.recarregar:
 try:
     f=st.session_state.filmes[st.session_state.indice]
     
-except IndexError:
-    
+except IndexError: 
     st.session_state.filmes = sugestao()
     st.session_state.indice = 0
     try: 
@@ -110,41 +107,40 @@ except IndexError:
     except:
         st.markdown('### Perdão não achamos filmes com esse filtro',text_alignment='center')
         st.write(st.session_state.filmes)
-try:
-    poster_url = f'https://image.tmdb.org/t/p/{tamanhos[5]}/{f['poster_path']}'
 
-    col_img, col_info = st.columns([1, 3])
+poster_url = f'https://image.tmdb.org/t/p/{tamanhos[5]}/{f['poster_path']}'
 
-    with col_img:
-        st.image(poster_url)
+col_img, col_info = st.columns([1, 3])
 
-    with col_info:
-        st.markdown(f"# {f['title']}")
-        col_nota, col_data = st.columns(2)
+with col_img:
+    st.image(poster_url)
 
-        with col_nota:
-            st.subheader(f"⭐ {f['vote_average']:.1f}/10")
-            st.write(f'Com {f['vote_count']} votos')
+with col_info:
+    st.markdown(f"# {f['title']}")
+    col_nota, col_data = st.columns(2)
 
-        with col_data:
-            data = f['release_date'].split('-')
-            try: st.subheader(f"📅 {data[2]}/{data[1]}/{data[0]}")
-            except: st.subheader('sem data')
-        st.space(size='small')
-        
-        st.markdown(f'{f['overview']}')
-        
-    col1, col2 = st.columns([1,1])
-    with col1:
-        if st.button('Não gostei', use_container_width=True,on_click=salvarAvalia,args=(f['genre_ids'],f['id'],False)):
-            st.session_state.indice += 1
-            st.rerun()
-    with col2:
-        if st.button('Gostei ou Pretendo ver', use_container_width=True,on_click=salvarAvalia,args=(f['genre_ids'],f['id'],True)):
-            st.session_state.indice += 1
-            st.rerun()
+    with col_nota:
+        st.subheader(f"⭐ {f['vote_average']:.1f}/10")
+        st.write(f'Com {f['vote_count']} votos')
+
+    with col_data:
+        data = f['release_date'].split('-')
+        try: st.subheader(f"📅 {data[2]}/{data[1]}/{data[0]}")
+        except: st.subheader('sem data')
+    st.space(size='small')
+    
+    st.markdown(f'{f['overview']}')
+    
+col1, col2 = st.columns([1,1])
+with col1:
+    if st.button('Não gostei', use_container_width=True,on_click=salvarAvalia,args=(f['genre_ids'],f['id'],False)):
+        st.session_state.indice += 1
+        st.rerun()
+with col2:
+    if st.button('Gostei ou Pretendo ver', use_container_width=True,on_click=salvarAvalia,args=(f['genre_ids'],f['id'],True)):
+        st.session_state.indice += 1
+        st.rerun()
             
-except:
-    pass
+
 
 

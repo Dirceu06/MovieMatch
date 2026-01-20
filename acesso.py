@@ -57,8 +57,9 @@ def tela_login():
                 genFinal = list()
                 for g in gen:
                     genFinal.append(g['id_genero'])
-                st.session_state.user = {"nome": nome, "login": login, "adulto": adulto, "gen": genFinal}
-                st.switch_page('pages/generos.py')
+                st.session_state.user = {"nome": nome, "login": login, "adulto": adulto, "gen": genFinal,
+                    'descricao': descricao, 'perfil_path': perfil_path}
+                st.switch_page('pages/01_generos.py')
             else:
                 erro="Login inválido"
     with col2:

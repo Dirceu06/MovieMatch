@@ -44,7 +44,7 @@ with tab1:
                 with col3:
                     if st.button('Detalhes',key=f"detalhes_{amigo['nome']}",width='stretch'):
                         st.session_state.amigo = amigo
-                        st.switch_page('pages/perfil_amigo.py')
+                        st.switch_page('pages/05_perfil_amigo.py')
                         
                     if st.button("Excluir",key=f"del_{amigo['nome']}",width='stretch'):
                         ret = requests.post(f"{API_URL}/user/excluiramigo", 

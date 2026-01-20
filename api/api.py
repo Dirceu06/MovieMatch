@@ -1,5 +1,6 @@
 from repositories.usuario_repository import UsuarioRepository
 from repositories.genero_repository import GeneroRepository
+from repositories.filme_repository import FilmeRepository
 from services.recomendacao_service import RecomendacaoService
 from fastapi import FastAPI
 
@@ -7,6 +8,7 @@ app = FastAPI()
 recomenda_service = RecomendacaoService()
 genero_repo = GeneroRepository()
 user_repo = UsuarioRepository()
+filme_repo = FilmeRepository()
 
 from api.auth_routes import auth_router
 from api.user_routes import user_router

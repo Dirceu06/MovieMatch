@@ -13,7 +13,7 @@ if not st.session_state.get('amigo'): st.subheader('Selecione "detalhes" em algu
 else:
     amigo = st.session_state.amigo
 
-    col1, col2 = st.columns([2,4])
+    col1, col2 = st.columns([1,3])
     with col1:
         st.image(f'assets/perfis/{amigo['perfil_path']}')
     
