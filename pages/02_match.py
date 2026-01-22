@@ -136,12 +136,18 @@ col1, col2 = st.columns([1,1])
 with col1:
     if st.button('Não gostei', use_container_width=True,on_click=salvarAvalia,args=(f['genre_ids'],f['id'],False)):
         st.session_state.indice += 1
-        del st.session_state.vistos
+        try:
+            del st.session_state.vistos
+        except:
+            pass
         st.rerun()
 with col2:
     if st.button('Gostei ou Pretendo ver', use_container_width=True,on_click=salvarAvalia,args=(f['genre_ids'],f['id'],True)):
         st.session_state.indice += 1
-        del st.session_state.vistos
+        try:
+            del st.session_state.vistos
+        except:
+            pass
         st.rerun()
             
 

@@ -47,10 +47,8 @@ class RecomendacaoService:
                     if filme['overview'] == '': continue
                     if filme["id"] not in filmes_excluidos:
                         lista_atual.append(filme)
-                        print(f'incluido: {filme['title']}')
                         filmes_excluidos.add(filme["id"])
-                    else:
-                        print(f'excluido: {filme['title']}')
+                    
                 if len(lista_atual)>=20 or page > totalPag:
                     atendido=True          
                 else: 

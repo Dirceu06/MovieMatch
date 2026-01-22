@@ -41,7 +41,6 @@ class TMDbService:
         
         
         response = requests.get(url, headers=self.headers, params=params)
-        print(response.json())
         return response.json()
     
     def get_movie_details(self, movie_id):

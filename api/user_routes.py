@@ -98,6 +98,6 @@ async def atualizar_infos(infos: InfosChangeRequests):
     user_repo.alterar_usuario(infos.nome, infos.descricao, infos.login)
 
 @user_router.patch('/atualizaperfil')
-async def atualizar_infos(infos: PerfilChangeRequests):
+async def atualizar_perfil_infos(infos: PerfilChangeRequests):
     user_repo.alterar_perfil_usuario(infos.caminho, infos.login)
     
