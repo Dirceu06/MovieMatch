@@ -92,3 +92,12 @@ async def filmes_vistos(user: UserRequest):
 async def infos_filmes(filmes: FilmesIdsRequests):
     infosVistos = recomenda_service.carrgar_filmes_infos(filmes.filmes_id)
     return infosVistos
+
+@user_router.patch('/atualizainfos')
+async def atualizar_infos(infos: InfosChangeRequests):
+    user_repo.alterar_usuario(infos.nome, infos.descricao, infos.login)
+
+@user_router.patch('/atualizaperfil')
+async def atualizar_infos(infos: PerfilChangeRequests):
+    user_repo.alterar_perfil_usuario(infos.caminho, infos.login)
+    

@@ -38,3 +38,12 @@ class Relacionamento(BaseModel):
 
 class FilmesIdsRequests(BaseModel):
     filmes_id: list[int]
+
+class InfosChangeRequests(BaseModel):
+    login: str
+    nome: str
+    descricao: str
+
+class PerfilChangeRequests(BaseModel):
+    login: str
+    caminho: str

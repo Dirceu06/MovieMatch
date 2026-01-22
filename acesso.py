@@ -19,16 +19,15 @@ def sair():
     st.switch_page("acesso.py")
 
 def tela_inicio():
-    st.title("Bem-vindo",text_alignment='center')
+    st.title("Bem-vindo",text_alignment='center',width='stretch')
 
-    col1, _,col2 = st.columns([1,0.3,1],vertical_alignment='bottom')
-
-    with col1:
+    _, col,_ = st.columns([1,2,1])
+    with col:
+        st.space('medium')
         if st.button("Já tenho conta",width='stretch'):
             st.session_state.rota = "login"
             st.rerun()
 
-    with col2:
         if st.button("Sou novo",width='stretch'):
             st.session_state.rota = "cadastro"
             st.rerun()

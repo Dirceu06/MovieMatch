@@ -122,13 +122,26 @@ class UsuarioRepository:
         # CRIPTOGRAFIA AQUI !!!!!!!!!!!!!!!
 
         cursor.execute("""
-            INSERT INTO usuario(login, nome, senha, adulto) 
-            VALUES(%s,%s,%s,%s)
-        """, (login, nome, senha, adulto))
+            INSERT INTO usuario(login, nome, senha, adulto, descricao, perfil_path) 
+            VALUES(%s,%s,%s,%s,%s,%s)
+        """, (login, nome, senha, adulto, 'Olá, sou novo no MovieMatch', 'oculos3d.png'))
         
         self.db.commit()
         return [True,'ok']
     
+    def alterar_usuario(self, nome,  descricao, login):
+        """Altera nome e descrição de usuario"""
+        cursor = self.db.get_cursor()
+        cursor.execute("""UPDATE usuario SET nome=%s, descricao=%s where login=%s""",(nome, descricao, login))
+        self.db.commit()
+
+    def alterar_perfil_usuario(self, caminho, login):
+        """Altera caminho da foto de perfil do usuario"""
+        cursor = self.db.get_cursor()
+        cursor.execute("""UPDATE usuario SET perfil_path=%s where login=%s""",(caminho, login))
+        self.db.commit()
+
+
     def autenticar_usuario(self, login, senha):
         """Autentica um usuário"""
         cursor = self.db.get_cursor()

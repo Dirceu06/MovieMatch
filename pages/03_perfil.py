@@ -14,8 +14,9 @@ eu = st.session_state.user
 
 
 def atualizarInfos(nome, descricao):
-    # request.put(f"{API_URL}/user/???", json={'nome': nome, 'descricao': descricao})
-    pass
+    requests.patch(f"{API_URL}/user/atualizainfos", json={'nome': nome, 'descricao': descricao, 'login': eu['login']})
+    return True
+    
 
 @st.cache_data
 def vistos():
@@ -29,10 +30,17 @@ col1, col2 = st.columns([1,3])
 with col1:
     st.image(f'assets/perfis/{eu['perfil_path']}')
 
-with col2: 
-    st.text_input(label='Nome', value=f'{eu['nome']}')
+with col2:
+    nome = st.text_input(label='Nome', value=f'{eu['nome']}', key='input_nome')
     st.caption(f"@{eu['login']}")
-    st.text_input(label='Descrição',value=f'{eu['descricao']}')
+    descricao = st.text_input(label='Descrição', value=f'{eu['descricao']}', key='input_descricao')
+    
+    if nome != eu['nome'] or descricao != eu['descricao']:
+        if st.button(label='Salvar', width='stretch'):
+            if atualizarInfos(nome, descricao):
+                eu['nome'], eu['descricao'] = nome, descricao
+            st.success('Informações atualizadas!')
+            st.rerun()
 
 st.divider()
 
