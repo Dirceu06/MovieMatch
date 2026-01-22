@@ -105,8 +105,9 @@ except IndexError:
     try: 
         f=st.session_state.filmes[st.session_state.indice]
     except:
-        st.markdown('### Perdão não achamos filmes com esse filtro',text_alignment='center')
-        st.write(st.session_state.filmes)
+        st.space('large')
+        st.markdown('## Perdão não achamos filmes com esse filtro',text_alignment='center')
+        st.stop()
 
 poster_url = f'https://image.tmdb.org/t/p/{tamanhos[5]}/{f['poster_path']}'
 
@@ -135,10 +136,12 @@ col1, col2 = st.columns([1,1])
 with col1:
     if st.button('Não gostei', use_container_width=True,on_click=salvarAvalia,args=(f['genre_ids'],f['id'],False)):
         st.session_state.indice += 1
+        del st.session_state.vistos
         st.rerun()
 with col2:
     if st.button('Gostei ou Pretendo ver', use_container_width=True,on_click=salvarAvalia,args=(f['genre_ids'],f['id'],True)):
         st.session_state.indice += 1
+        del st.session_state.vistos
         st.rerun()
             
 

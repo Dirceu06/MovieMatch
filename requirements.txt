@@ -2,3 +2,4 @@ streamlit
 fastapi
 psycopg2
 uvicorn
+bcrypt

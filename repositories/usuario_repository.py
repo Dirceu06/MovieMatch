@@ -1,7 +1,5 @@
 from core.databasePB import Database
 from psycopg2 import errors
-import hashlib
-import psycopg2
 
 class UsuarioRepository:
     def __init__(self):
@@ -108,18 +106,16 @@ class UsuarioRepository:
         """)
         self.db.commit()
     
-    def inserir_usuario(self, login, nome, senha, adulto):
+    def inserir_usuario(self, login, nome, senha, adulto=False):
         """Insere um novo usuário"""
         cursor = self.db.get_cursor()
         
         if (not login or login=='') or (not nome or nome=='') or (not senha or senha==''):
-            return [False,'vazio']
+            raise ValueError("Login, nome ou senha inválidos")  
         
         cursor.execute("SELECT 1 FROM usuario WHERE login=%s", (login,))
         if cursor.fetchone():
-            return [False,'existe']
-        
-        # CRIPTOGRAFIA AQUI !!!!!!!!!!!!!!!
+            raise ValueError("Login já existente")
 
         cursor.execute("""
             INSERT INTO usuario(login, nome, senha, adulto, descricao, perfil_path) 
@@ -127,7 +123,7 @@ class UsuarioRepository:
         """, (login, nome, senha, adulto, 'Olá, sou novo no MovieMatch', 'oculos3d.png'))
         
         self.db.commit()
-        return [True,'ok']
+        return True
     
     def alterar_usuario(self, nome,  descricao, login):
         """Altera nome e descrição de usuario"""
@@ -141,17 +137,15 @@ class UsuarioRepository:
         cursor.execute("""UPDATE usuario SET perfil_path=%s where login=%s""",(caminho, login))
         self.db.commit()
 
-
-    def autenticar_usuario(self, login, senha):
-        """Autentica um usuário"""
+    def buscar_senha_por_login(self, login):
+        """Busca o hash da senha de um usuário pelo login"""
         cursor = self.db.get_cursor()
-        cursor.execute("SELECT senha FROM usuario WHERE login=%s", (login,))
-        
-        resultado = cursor.fetchone()
-        if not resultado:
-            return None
-        
-        return {'acesso': resultado['senha'] == senha,'login': login }            
+        cursor.execute(
+            "SELECT senha FROM usuario WHERE login=%s",
+            (login,)
+        )
+        row = cursor.fetchone()
+        return row["senha"].encode("utf-8") if row else None          
     
     def buscar_info_usuario(self, login):
         """Busca informações básicas do usuário"""
@@ -222,6 +216,7 @@ class UsuarioRepository:
         self.db.commit()
         
     def adicionar_amizade(self, user_atual, user_amigo):
+        """Adiciona um amigo para o usuário atual"""
         cursor=self.db.get_cursor()
         cursor.execute(
             "SELECT 1 FROM usuario WHERE login=%s",(user_amigo,))
@@ -241,11 +236,13 @@ class UsuarioRepository:
             return [False, 'amigo inexistente']
         
     def remover_amizade(self, user_atual, user_amigo):
+        """Remove um amigo do usuário atual"""
         cursor = self.db.get_cursor()
         cursor.execute(
             "DELETE FROM usuario_amigo WHERE login=%s AND login_amigo=%s",(user_atual,user_amigo))
        
     def lista_amigos(self, user_atual):
+        """Lista os amigos do usuário atual"""
         cursor = self.db.get_cursor()
         cursor.execute(
             "SELECT ua.login_amigo, u.nome, u.descricao, u.perfil_path FROM usuario_amigo AS ua JOIN usuario AS u ON u.login=ua.login_amigo WHERE ua.login=%s",(user_atual,))
@@ -253,6 +250,7 @@ class UsuarioRepository:
         return lista
     
     def filmes_em_comum(self, user_atual, user_amigo):
+        """Lista filmes avaliados positivamente em comum entre o usuário atual e um amigo"""
         cursor = self.db.get_cursor()
 
         query = """

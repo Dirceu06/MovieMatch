@@ -57,13 +57,11 @@ with tab1:
 with tab2:
     st.write("### Adicionar amigos")
     
-    # Input para buscar
     amigo_login = st.text_input(
         "Digite o login do amigo:",
         key="input_amigo_login"
     )
     
-    # Botão de busca
     if st.button("Adicionar amigo", key="btn_buscar"):
 
         if amigo_login:
@@ -76,10 +74,8 @@ with tab2:
 
                 if res.status_code in [200,409]:
                     res = res.json()
-                st.write(res)
                 if res['success']:
                     st.success(f"{amigo_login} adicionado!")
-                    # Limpa o cache e atualiza
                     st.cache_data.clear()
                     st.rerun()
                 else:
