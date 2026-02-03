@@ -1,3 +1,4 @@
+from acesso import sair
 from core.config import Config
 API_URL = Config.API_URL
 import streamlit as st
@@ -13,11 +14,17 @@ tamanhos = ['w92','w154','w185','w342','w500','w780']
 eu = st.session_state.user
 
 def atualizarInfos(nome, descricao):
-    res = rotina_requests('PATCH', '/user/atualizainfos', json={'nome': nome, 'descricao': descricao, 'login': eu['login']})
+    try:
+        res = rotina_requests('PATCH', '/user/atualizainfos', json={'nome': nome, 'descricao': descricao, 'login': eu['login']})
+    except RuntimeError:
+        sair()
     return res['success'] if 'success' in res else False
     
 def vistos():
-    return rotina_requests('GET', '/user/idfilmesvistos')
+    try:
+        return rotina_requests('GET', '/user/idfilmesvistos')
+    except RuntimeError:
+        sair()
 
 if 'vistos' not in st.session_state:
     st.session_state.vistos = vistos()

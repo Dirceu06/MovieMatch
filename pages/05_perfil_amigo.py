@@ -1,3 +1,4 @@
+from acesso import sair
 from core.api_client import rotina_requests
 from core.config import Config
 API_URL = Config.API_URL
@@ -24,7 +25,10 @@ else:
         st.write(f'{amigo['descricao']}')
 
     st.divider()
-    res = rotina_requests('GET',f"/user/filmescomum",json={'login_amigo': amigo['login_amigo']})
+    try:
+        res = rotina_requests('GET',f"/user/filmescomum",json={'login_amigo': amigo['login_amigo']})
+    except RuntimeError:
+        sair()
     
     if len(res)!=0:
         st.subheader(f'{len(res)} filmes em comum: ')

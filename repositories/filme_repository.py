@@ -37,12 +37,14 @@ class FilmeRepository:
     
     def associar_generos_filme(self, filme_id, generos_ids):
         """Associa gêneros a um filme"""
-        cursor = self.db.get_cursor()
-        
-        for genero_id in generos_ids:
-            cursor.execute(
-                "INSERT INTO filmes_genero(id_filme, id_genero) VALUES (%s,%s) on conflict (id_filme, id_genero) do nothing",
-                (filme_id, genero_id)
+        if not generos_ids:
+            return
+    
+        with self.db.get_cursor() as cursor:
+            values = [(filme_id, genero_id) for genero_id in generos_ids]
+            cursor.executemany(
+                "INSERT INTO filmes_genero(id_filme, id_genero) VALUES (%s,%s) ON CONFLICT DO NOTHING",
+                values
             )
         
         self.db.commit()

@@ -35,10 +35,7 @@ async def salvar_generos_usuario(gen_list: Gostos, usuario: str = Depends(get_us
 @user_router.post('/carregargostosusuario')
 async def carregar_gosto_usuario(usuario: str = Depends(get_usuario)):
     resultado= genero_repo.buscar_por_usuario(usuario)
-    res = list()
-    for r in resultado:
-        res.append(r['id_genero'])
-    return res
+    return resultado
 
 @user_router.post('/sugestoes')
 async def carregar_sugestoes(user:SugestaoRequest, usuario: str = Depends(get_usuario)):
@@ -68,7 +65,7 @@ async def add_amigo(add: Relacionamento, usuario: str = Depends(get_usuario)):
                 "success": True,
                 "message": res[1],
                 "data": {
-                    "login": add.login,
+                    "login": usuario,
                     "amigo": add.login_amigo
                 }
             }
@@ -81,7 +78,7 @@ async def add_amigo(add: Relacionamento, usuario: str = Depends(get_usuario)):
                 "success": False,
                 "message": res[1],
                 "data": {
-                    "login": add.login,
+                    "login": usuario,
                     "amigo": add.login_amigo
                 }
             }

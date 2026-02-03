@@ -11,16 +11,19 @@ if not st.session_state.get("mudouGen"): st.session_state.mudouGen = False
 
 if "genlist" not in st.session_state:  st.session_state.genlist = []
 
-def exibir_opinar_filmes():
-    st.success('deu em')
 
 def sair():
     st.session_state.clear()
+    st.session_state.desconectado = True
     st.cache_data.clear()
     st.switch_page("acesso.py")
     
 def buscar_generos():
-    return rotina_requests('GET','/user/genero')
+    try:
+        return rotina_requests('GET','/user/genero')
+    except RuntimeError:
+        sair()
+        
 
 @st.cache_data
 def carregar_gosto():
@@ -30,7 +33,10 @@ def carregar_gosto():
    
 def salvar_gosto(gen_list: list):
     # requests.post(f'{API_URL}/user/salvagostos',json={'login': st.session_state.user['login'],'gen_list': gen_list}).json()
-    rotina_requests('POST','/user/salvagostos',json={'gen_list': gen_list})
+    try:
+        rotina_requests('POST','/user/salvagostos',json={'gen_list': gen_list})
+    except RuntimeError:
+        sair()
     st.cache_data.clear()
     st.session_state.mudouGen = True
     

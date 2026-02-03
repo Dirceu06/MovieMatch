@@ -60,7 +60,7 @@ async def login(dados: Login):
     if not auth_service.autenticar_usuario(dados.login, dados.senha):
         raise HTTPException(status_code=401, detail="Credenciais inválidas")
 
-    acess_tk = criar_token(dados.login)
+    acess_tk = criar_token(dados.login, timedelta(minutes=30))
     refresh_tk = criar_token(dados.login, timedelta(days=7)) 
     return {'access_tk': acess_tk, "refresh_tk": refresh_tk}
 

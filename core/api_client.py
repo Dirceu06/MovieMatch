@@ -18,19 +18,18 @@ def rotina_requests(method: str, path: str, **kwargs):
         **kwargs
     )
 
-    if resp.status_code != 401:
-        
+    if resp.status_code not in [401, 403, 422, 500, 404, 400]:
         return resp.json()
 
     # tenta refresh
-    refresh = requests.post(
+    refresh = requests.get(
         f"{API_URL}/auth/refresh",
         headers={
             "Authorization": f"Bearer {tokens['refresh_tk']}"
         }
     )
 
-    if refresh.status_code == 401:
+    if refresh.status_code != 200:
         raise RuntimeError("Sessão expirada")
 
     st.session_state["tokens"] = refresh.json()

@@ -1,5 +1,6 @@
 import requests
 import streamlit as st
+from acesso import sair
 from core.config import Config
 from core.api_client import rotina_requests
 API_URL = Config.API_URL
@@ -45,11 +46,16 @@ def sugestao():
         'anoFIM': st.session_state.anoFim,
         'sort':   st.session_state.sort
     }
-    
-    return rotina_requests('POST','/user/sugestoes',json=dados)
+    try:
+        return rotina_requests('POST','/user/sugestoes',json=dados)
+    except RuntimeError:
+        sair()
 
 def salvarAvalia(filme_gen,filme_id,filme_aval:bool):
-    rotina_requests('POST',f"/user/avaliar",json={'filme_id': filme_id,'filme_gen': filme_gen,'avaliacao': filme_aval})
+    try:
+        rotina_requests('POST',f"/user/avaliar",json={'filme_id': filme_id,'filme_gen': filme_gen,'avaliacao': filme_aval})
+    except RuntimeError:
+        sair()
 
 
 if 'filmes' not in st.session_state: st.session_state.filmes = sugestao()

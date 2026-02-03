@@ -40,14 +40,12 @@ class GeneroRepository:
     
     def buscar_por_usuario(self, user_id):
         """Busca gêneros associados a um usuário"""
-        cursor = self.db.get_cursor()
-        cursor.execute("""
-            SELECT id_genero FROM usuario_genero
-            WHERE login = %s
-        """, (user_id,))
-        resultado = cursor.fetchall()
-       
-        return resultado
+        with self.db.get_cursor() as cursor:
+            cursor.execute(
+                "SELECT id_genero FROM usuario_genero WHERE login = %s",
+                (user_id,)
+            )
+            return [row['id_genero'] for row in cursor.fetchall()]
     
     def buscar_por_filme(self,filme_id):
         """Busca gêneros associados a um filme"""

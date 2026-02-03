@@ -15,7 +15,9 @@ class UsuarioRepository:
                 login TEXT PRIMARY KEY,
                 nome TEXT ,
                 senha TEXT ,
-                adulto BOOLEAN
+                adulto BOOLEAN,
+                descricao TEXT,
+                perfil_path TEXT
             );
         """)
         cursor.execute("""

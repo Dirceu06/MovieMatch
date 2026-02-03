@@ -21,16 +21,19 @@ def sair():
 
 def tela_inicio():
     st.title("Bem-vindo",text_alignment='center',width='stretch')
-
+    if st.session_state.get('desconectado'):
+        st.info('Parece que você foi desconectado, faça login para continuar.',width='stretch')
     _, col,_ = st.columns([1,2,1])
     with col:
         st.space('medium')
         if st.button("Já tenho conta",width='stretch'):
             st.session_state.rota = "login"
+            st.session_state.pop('desconectado', None)
             st.rerun()
 
         if st.button("Sou novo",width='stretch'):
             st.session_state.rota = "cadastro"
+            st.session_state.pop('desconectado', None)
             st.rerun()
 
 def tela_login():
@@ -65,6 +68,7 @@ def tela_login():
                 st.switch_page('pages/01_generos.py')
             else:
                 erro="Login inválido"
+                #portugues brasil 
     with col2:
         if st.button("Voltar",width='stretch'):
             st.session_state.rota = "inicio"
