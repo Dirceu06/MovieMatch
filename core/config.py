@@ -11,4 +11,4 @@ class Config:
     LANGUAGE = "pt-BR"
     DEFAULT_PAGE_SIZE = 20
     
-    API_URL = "http://localhost:8000"
+    API_URL = "74.220.50.0/24"
