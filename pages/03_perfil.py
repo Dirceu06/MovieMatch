@@ -1,6 +1,6 @@
+import os
 from acesso import sair
-from core.config import Config
-API_URL = Config.API_URL
+API_URL = os.getenv("API_URL")
 import streamlit as st
 import requests
 import math

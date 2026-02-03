@@ -1,27 +1,29 @@
+import os
 import requests
-from core.config import Config
+TMDB_BASE_URL = os.getenv("TMDB_BASE_URL")
+TMDB_API_KEY = os.getenv("TMDB_API_KEY")
 
 class TMDbService:
     def __init__(self):
         self.headers = {
             "accept": "application/json",
-            "Authorization": f"Bearer {Config.TMDB_API_KEY}"
+            "Authorization": f"Bearer {TMDB_API_KEY}"
         }
     
     def get_generos(self):
         """Busca lista de gêneros do TMDb"""
-        url = f"{Config.TMDB_BASE_URL}/genre/movie/list?language=pt"
+        url = f"{TMDB_BASE_URL}/genre/movie/list?language=pt"
         response = requests.get(url, headers=self.headers)
         return response.json().get('genres', [])
     
     def discover_movies(self, genero_id=None, page=1, include_adult=False, brasil= False, anoINI=1980, anoFIM=2026,sort='popularidade'):
         """Busca filmes por gênero"""
-        url = f"{Config.TMDB_BASE_URL}/discover/movie"
+        url = f"{TMDB_BASE_URL}/discover/movie"
         
         params = {
             "include_adult": False,
             "include_video": False,
-            "language": Config.LANGUAGE,
+            "language": "pt-BR",
             "page": page,
             "vote_count.gte": 300,
             "release_date.gte": f"{anoINI}-01-01",
@@ -45,6 +47,6 @@ class TMDbService:
     
     def get_movie_details(self, movie_id):
         """Busca detalhes de um filme específico"""
-        url = f"{Config.TMDB_BASE_URL}/movie/{movie_id}?language={Config.LANGUAGE}"
+        url = f"{TMDB_BASE_URL}/movie/{movie_id}?language=pt-BR"
         response = requests.get(url, headers=self.headers)
         return response

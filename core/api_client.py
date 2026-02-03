@@ -1,6 +1,6 @@
+import os
 import requests
-from core.config import Config
-API_URL = Config.API_URL
+API_URL = os.getenv("API_URL")
 import streamlit as st
 
 def rotina_requests(method: str, path: str, **kwargs):

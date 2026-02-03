@@ -1,5 +1,6 @@
-from core.config import Config
-API_URL = Config.API_URL
+import os
+
+API_URL = os.getenv("API_URL")
 import streamlit as st
 import requests
 from core.api_client import rotina_requests
@@ -24,7 +25,6 @@ def buscar_generos():
     except RuntimeError:
         sair()
         
-
 @st.cache_data
 def carregar_gosto():
     st.session_state.genlist = st.session_state.user['gen']

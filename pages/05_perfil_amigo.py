@@ -1,7 +1,7 @@
+import os
 from acesso import sair
 from core.api_client import rotina_requests
-from core.config import Config
-API_URL = Config.API_URL
+API_URL = os.getenv("API_URL")
 import streamlit as st
 import requests
 
