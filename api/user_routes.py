@@ -47,7 +47,6 @@ async def carregar_sugestoes(user:SugestaoRequest, usuario: str = Depends(get_us
 
 @user_router.get('/infos')
 async def infos_user(usuario: str = Depends(get_usuario)):
-    print("USUARIO:", usuario, type(usuario))
     return user_repo.buscar_info_usuario(usuario)
 
 @user_router.post('/avaliar')

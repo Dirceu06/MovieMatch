@@ -11,7 +11,6 @@ if not st.session_state.get("logado"):
 
 
 def buscar_amigos():
-    
     response = rotina_requests('GET', '/user/listaramigos')
     if len(response) > 0:
         return response
