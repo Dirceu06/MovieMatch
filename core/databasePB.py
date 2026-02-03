@@ -7,6 +7,8 @@ from dotenv import load_dotenv
 load_dotenv()
 
 class Database:
+    """Classe para gerenciar a conexão com o banco de dados PostgreSQL"""
+
     def __init__(
         self,
         host=None,
@@ -16,11 +18,11 @@ class Database:
         port=None
     ):
         self.config = {
-            'host':os.getenv("DB_HOST"),
-            'database':os.getenv("DB_NAME"),
-            'user':os.getenv("DB_USER"),
-            'password':os.getenv("DB_PASSWORD"),
-            'port':os.getenv("DB_PORT")
+            'host':os.getenv("PGHOST"),
+            'database':os.getenv("PGDATABASE"),
+            'user':os.getenv("PGUSER"),
+            'password':os.getenv("PGPASSWORD"),
+            'port':os.getenv("PGPORT")
             
         }
         self.connection = None
@@ -28,7 +30,7 @@ class Database:
     def connect(self):
         """Estabelece conexão com o PostgreSQL"""
         if not self.connection:
-            self.connection = psycopg2.connect(**self.config)
+            self.connection = psycopg2.connect(**self.config,sslmode=os.getenv("PGSSLMODE"),channel_binding=os.getenv("PGCHANNELBINDING"))
         return self.connection
 
     def get_cursor(self):
