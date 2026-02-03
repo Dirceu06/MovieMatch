@@ -3,7 +3,7 @@ import requests
 import streamlit as st
 from acesso import sair
 from core.api_client import rotina_requests
-API_URL = os.getenv("API_URL")
+API_URL = st.secrets["API_URL"]
 st.set_page_config(page_title='Match',page_icon= ':clapper:',layout='wide')
 st.markdown("""
     <style>

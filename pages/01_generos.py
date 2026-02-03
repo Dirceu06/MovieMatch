@@ -1,9 +1,9 @@
 import os
 
-API_URL = os.getenv("API_URL")
 import streamlit as st
 import requests
 from core.api_client import rotina_requests
+API_URL = st.secrets["API_URL"]
 
 st.set_page_config('Inicio', ':clapper:',layout='centered')
 

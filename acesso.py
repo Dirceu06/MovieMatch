@@ -2,7 +2,7 @@ import streamlit as st
 import requests
 import os
 from core.api_client import rotina_requests
-API_URL = os.getenv("API_URL")
+API_URL = st.secrets["API_URL"]
 st.set_page_config(page_title='acesso',page_icon= ':clapper:',layout='centered')
 
 if "logado" not in st.session_state:

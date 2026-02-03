@@ -1,6 +1,6 @@
 import os
 import requests
-API_URL = os.getenv("API_URL")
+API_URL = st.secrets["API_URL"]
 import streamlit as st
 
 def rotina_requests(method: str, path: str, **kwargs):

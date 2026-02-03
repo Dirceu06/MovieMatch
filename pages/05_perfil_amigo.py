@@ -1,7 +1,7 @@
 import os
 from acesso import sair
 from core.api_client import rotina_requests
-API_URL = os.getenv("API_URL")
+API_URL = st.secrets["API_URL"]
 import streamlit as st
 import requests
 
