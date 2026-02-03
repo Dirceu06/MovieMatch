@@ -1,6 +1,7 @@
 import requests
 import streamlit as st
 from core.config import Config
+from core.api_client import rotina_requests
 API_URL = Config.API_URL
 st.set_page_config(page_title='Match',page_icon= ':clapper:',layout='wide')
 st.markdown("""
@@ -44,11 +45,12 @@ def sugestao():
         'anoFIM': st.session_state.anoFim,
         'sort':   st.session_state.sort
     }
-
-    return requests.post(f'{API_URL}/user/sugestoes', json=dados).json()
+    
+    return rotina_requests('POST','/user/sugestoes',json=dados)
 
 def salvarAvalia(filme_gen,filme_id,filme_aval:bool):
-    requests.post(f"{API_URL}/user/avaliar",json={'filme_id': filme_id,'filme_gen': filme_gen,'avaliacao': filme_aval, 'login': st.session_state.user['login']})
+    rotina_requests('POST',f"/user/avaliar",json={'filme_id': filme_id,'filme_gen': filme_gen,'avaliacao': filme_aval})
+
 
 if 'filmes' not in st.session_state: st.session_state.filmes = sugestao()
 

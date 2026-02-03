@@ -1,9 +1,14 @@
+import os
 from repositories.usuario_repository import UsuarioRepository
 from repositories.genero_repository import GeneroRepository
 from repositories.filme_repository import FilmeRepository
 from services.recomendacao_service import RecomendacaoService
 from services.auth_service import AuthService
 from fastapi import FastAPI
+
+algorithm = os.getenv("ALGORITHM")
+access_token_expire_minutes = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES"))
+secret_key = os.getenv("SECRET_KEY")
 
 app = FastAPI()
 recomenda_service = RecomendacaoService()

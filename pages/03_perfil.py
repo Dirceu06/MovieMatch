@@ -3,6 +3,7 @@ API_URL = Config.API_URL
 import streamlit as st
 import requests
 import math
+from core.api_client import rotina_requests
 
 st.set_page_config('Inicio', ':clapper:',layout='wide')
 
@@ -12,11 +13,11 @@ tamanhos = ['w92','w154','w185','w342','w500','w780']
 eu = st.session_state.user
 
 def atualizarInfos(nome, descricao):
-    requests.patch(f"{API_URL}/user/atualizainfos", json={'nome': nome, 'descricao': descricao, 'login': eu['login']})
-    return True
+    res = rotina_requests('PATCH', '/user/atualizainfos', json={'nome': nome, 'descricao': descricao, 'login': eu['login']})
+    return res['success'] if 'success' in res else False
     
 def vistos():
-    return requests.get(f'{API_URL}/user/idfilmesvistos', json={'login': eu['login']}).json() 
+    return rotina_requests('GET', '/user/idfilmesvistos')
 
 if 'vistos' not in st.session_state:
     st.session_state.vistos = vistos()

@@ -1,3 +1,4 @@
+from core.api_client import rotina_requests
 from core.config import Config
 API_URL = Config.API_URL
 import streamlit as st
@@ -23,8 +24,8 @@ else:
         st.write(f'{amigo['descricao']}')
 
     st.divider()
-    res = requests.get(f"{API_URL}/user/filmescomum",
-        json={"login": st.session_state.user['login'], 'login_amigo': amigo['login_amigo']}).json()
+    res = rotina_requests('GET',f"/user/filmescomum",json={'login_amigo': amigo['login_amigo']})
+    
     if len(res)!=0:
         st.subheader(f'{len(res)} filmes em comum: ')
         for f in res:

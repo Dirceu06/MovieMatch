@@ -2,6 +2,7 @@ from core.config import Config
 API_URL = Config.API_URL
 import streamlit as st
 import requests
+from core.api_client import rotina_requests
 
 st.set_page_config('Amizades', ':clapper:', layout='centered')
 
@@ -11,14 +12,9 @@ if not st.session_state.get("logado"):
 
 def buscar_amigos():
     
-    response = requests.get(
-        f'{API_URL}/user/listaramigos', 
-        json={'login': st.session_state.user['login']},
-        timeout=5
-    )
-    if response.status_code == 200:
-        return response.json()
-    
+    response = rotina_requests('GET', '/user/listaramigos')
+    if len(response) > 0:
+        return response
     return None
 
 
@@ -47,8 +43,7 @@ with tab1:
                         st.switch_page('pages/05_perfil_amigo.py')
                         
                     if st.button("Excluir",key=f"del_{amigo['nome']}",width='stretch'):
-                        ret = requests.post(f"{API_URL}/user/excluiramigo", 
-                            json={'login': st.session_state.user['login'], 'login_amigo': amigo['login_amigo']})
+                        ret = rotina_requests('POST',f"/user/excluiramigo",json={'login_amigo': amigo['login_amigo']})
                         
                         st.success(f"Amigo removido!")
                         st.cache_data.clear()
@@ -69,8 +64,7 @@ with tab2:
             if amigo_login == st.session_state.user['login']:
                 st.error("Você não pode se adicionar!")
             else:
-                res = requests.post(f'{API_URL}/user/adicionaramigo',
-                    json={'login': st.session_state.user['login'], 'login_amigo': amigo_login},timeout=5)
+                res = rotina_requests('POST',f'/user/adicionaramigo',json={'login_amigo': amigo_login})
 
                 if res.status_code in [200,409]:
                     res = res.json()

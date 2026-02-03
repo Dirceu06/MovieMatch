@@ -1,6 +1,7 @@
 import streamlit as st
 import requests
 from core.config import Config
+from core.api_client import rotina_requests
 API_URL = Config.API_URL
 st.set_page_config(page_title='acesso',page_icon= ':clapper:',layout='centered')
 
@@ -49,14 +50,17 @@ def tela_login():
 
             if resp.status_code == 200:
                 st.session_state.logado = True
+                if not st.session_state.get('tokens'): st.session_state.tokens = resp.json()
                 login = usuario
-                infos =  requests.get(f'{API_URL}/user/infos',json={'login':login}).json()
+                infos =  rotina_requests('GET',f'/user/infos')
+                if not infos:
+                    erro = "Erro ao buscar informações do usuário"
+                    st.error(erro)
+                    return
+                
                 nome, adulto, descricao, perfil_path = infos['nome'],infos['adulto'], infos['descricao'],infos['perfil_path']
-                gen = requests.post(f'{API_URL}/user/carregargostosusuario',json={'login':login}).json()
-                genFinal = list()
-                for g in gen:
-                    genFinal.append(g['id_genero'])
-                st.session_state.user = {"nome": nome, "login": login, "adulto": adulto, "gen": genFinal,
+                gen = rotina_requests('POST',f'/user/carregargostosusuario')
+                st.session_state.user = {"nome": nome, "login": login, "adulto": adulto, "gen": gen,
                     'descricao': descricao, 'perfil_path': perfil_path}
                 st.switch_page('pages/01_generos.py')
             else:

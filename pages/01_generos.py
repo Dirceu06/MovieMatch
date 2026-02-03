@@ -2,6 +2,7 @@ from core.config import Config
 API_URL = Config.API_URL
 import streamlit as st
 import requests
+from core.api_client import rotina_requests
 
 st.set_page_config('Inicio', ':clapper:',layout='centered')
 
@@ -18,9 +19,8 @@ def sair():
     st.cache_data.clear()
     st.switch_page("acesso.py")
     
-@st.cache_data
 def buscar_generos():
-    return requests.get(f'{API_URL}/user/genero').json()
+    return rotina_requests('GET','/user/genero')
 
 @st.cache_data
 def carregar_gosto():
@@ -29,7 +29,8 @@ def carregar_gosto():
     return st.session_state.user['gen']
    
 def salvar_gosto(gen_list: list):
-    requests.post(f'{API_URL}/user/salvagostos',json={'login': st.session_state.user['login'],'gen_list': gen_list}).json()
+    # requests.post(f'{API_URL}/user/salvagostos',json={'login': st.session_state.user['login'],'gen_list': gen_list}).json()
+    rotina_requests('POST','/user/salvagostos',json={'gen_list': gen_list})
     st.cache_data.clear()
     st.session_state.mudouGen = True
     

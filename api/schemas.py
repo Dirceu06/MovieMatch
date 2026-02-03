@@ -23,17 +23,14 @@ class CadastroRequest(BaseModel):
     adulto: bool
     
 class Gostos(BaseModel):
-    login: str
     gen_list: list
    
 class Avaliar(BaseModel):
     filme_id: int
     filme_gen: list
-    login: str
     avaliacao: bool
     
 class Relacionamento(BaseModel):
-    login: str
     login_amigo: str
 
 class FilmesIdsRequests(BaseModel):
