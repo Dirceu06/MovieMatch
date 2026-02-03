@@ -1,6 +1,6 @@
 streamlit
 fastapi
-psycopg2
+psycopg2-binary
 uvicorn
 bcrypt
 python-jose
