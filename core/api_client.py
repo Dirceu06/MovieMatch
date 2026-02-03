@@ -1,7 +1,7 @@
 import os
 import requests
-API_URL = st.secrets["API_URL"]
 import streamlit as st
+API_URL = st.secrets["API_URL"]
 
 def rotina_requests(method: str, path: str, **kwargs):
     tokens = st.session_state.get("tokens")

@@ -1,8 +1,8 @@
 import os
 from acesso import sair
 from core.api_client import rotina_requests
-API_URL = st.secrets["API_URL"]
 import streamlit as st
+API_URL = st.secrets["API_URL"]
 import requests
 
 tamanhos = ['w92','w154','w185','w342','w500','w780']
