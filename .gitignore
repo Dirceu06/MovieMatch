@@ -1,4 +1,4 @@
-.Vrenv
+.env
 core/databaseVelho.py
-core/rconfig.py
+core/config.py
 .vscode
