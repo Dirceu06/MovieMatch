@@ -12,6 +12,8 @@
 
 **Live Demo:** [Site](https://moviematch-dejota.streamlit.app) | [API Docs](https://moviematch-6k2e.onrender.com/docs)
 
+A aplicação pode demorar para responder, pois as ferramentas ultilizadas para deploy, possuem sleep timer, porém após a primeira oparação tudo já funciona bem mais rapido
+
 ## ✨ Funcionalidades
 
 ### 🎯 Sistema de Recomendação
@@ -33,3 +35,8 @@
 - **Render.com** - Hosting da API (Free tier)
 - **Streamlit Cloud** - Hosting do frontend (Free)
 - **Neon.tech** - PostgreSQL como serviço (Free tier)
+
+### Imagens do projeto:
+<img width="1853" height="721" alt="Image" src="https://github.com/user-attachments/assets/6ffaafcc-6aca-4d82-beeb-cea9c4a56b5f" />
+<img width="1871" height="787" alt="Image" src="https://github.com/user-attachments/assets/59c52752-53e6-48bf-a542-962a8385369f" />
+<img width="1861" height="774" alt="Image" src="https://github.com/user-attachments/assets/369f3aea-7ead-45fd-be50-2f35afd19170" />
