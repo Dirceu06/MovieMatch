@@ -5,12 +5,12 @@
 [![Streamlit](https://img.shields.io/badge/Streamlit-1.28+-red.svg)](https://streamlit.io)
 [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-15+-blue.svg)](https://postgresql.org)
 [![License](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
-[![Live Demo](https://img.shields.io/badge/🚀-Live%20Demo-success)]((https://moviematch-dejota.streamlit.app))
+[![Live Demo](https://img.shields.io/badge/🚀-Live%20Demo-success)](https://moviematch-dejota.streamlit.app)
 
 
 **MovieMatch** é um sistema de recomendação de filmes com funcionalidades sociais, estilo Tinder.
 
-> ✨ **Live Demo:** [Frontend]((https://moviematch-dejota.streamlit.app)) | [API Docs]((https://moviematch-6k2e.onrender.com/docs))
+**Live Demo:** [Site](https://moviematch-dejota.streamlit.app) | [API Docs](https://moviematch-6k2e.onrender.com/docs)
 
 ## ✨ Funcionalidades
 
