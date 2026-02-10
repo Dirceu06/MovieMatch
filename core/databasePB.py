@@ -29,8 +29,7 @@ class Database:
 
     def connect(self):
         """Estabelece conexão com o PostgreSQL"""
-        if not self.connection:
-            self.connection = psycopg2.connect(**self.config,sslmode=os.getenv("PGSSLMODE"),channel_binding=os.getenv("PGCHANNELBINDING"))
+        self.connection = psycopg2.connect(**self.config,sslmode=os.getenv("PGSSLMODE"),channel_binding=os.getenv("PGCHANNELBINDING"))
         return self.connection
 
     def get_cursor(self):

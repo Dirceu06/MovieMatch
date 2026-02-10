@@ -25,6 +25,7 @@ class FilmeRepository:
         """)
         
         self.db.commit()
+        self.db.close()
     
     def inserir_filme(self, filme_id):
         """Insere um filme no banco"""
@@ -34,6 +35,7 @@ class FilmeRepository:
             (filme_id,)
         )
         self.db.commit()
+        self.db.close()
     
     def associar_generos_filme(self, filme_id, generos_ids):
         """Associa gêneros a um filme"""
@@ -48,6 +50,7 @@ class FilmeRepository:
             )
         
         self.db.commit()
+        self.db.close()
     
     def registrar_avaliacao(self, user_id, filme_id, avaliacao):
         """Registra avaliação de um filme por um usuário"""
@@ -62,6 +65,7 @@ class FilmeRepository:
                 avaliacao = EXCLUDED.avaliacao;
         """, (user_id, filme_id, avaliacao))
         self.db.commit()
+        self.db.close()
     
     def buscar_filmes_vistos(self, user_id):
         """Busca filmes já vistos pelo usuário"""
@@ -71,4 +75,6 @@ class FilmeRepository:
             (user_id,)
         )
         
-        return [row for row in cursor.fetchall()]
+        result = [row for row in cursor.fetchall()]
+        self.db.close()
+        return result

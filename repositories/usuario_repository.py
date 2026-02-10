@@ -107,16 +107,19 @@ class UsuarioRepository:
             EXECUTE FUNCTION incrementar_pagina_genero();
         """)
         self.db.commit()
+        self.db.close()
     
     def inserir_usuario(self, login, nome, senha, adulto=False):
         """Insere um novo usuário"""
         cursor = self.db.get_cursor()
         
         if (not login or login=='') or (not nome or nome=='') or (not senha or senha==''):
+            self.db.close()
             raise ValueError("Login, nome ou senha inválidos")  
         
         cursor.execute("SELECT 1 FROM usuario WHERE login=%s", (login,))
         if cursor.fetchone():
+            self.db.close()
             raise ValueError("Login já existente")
 
         cursor.execute("""
@@ -125,6 +128,7 @@ class UsuarioRepository:
         """, (login, nome, senha, adulto, 'Olá, sou novo no MovieMatch', 'oculos3d.png'))
         
         self.db.commit()
+        self.db.close()
         return True
     
     def alterar_usuario(self, nome,  descricao, login):
@@ -132,12 +136,14 @@ class UsuarioRepository:
         cursor = self.db.get_cursor()
         cursor.execute("""UPDATE usuario SET nome=%s, descricao=%s where login=%s""",(nome, descricao, login))
         self.db.commit()
+        self.db.close()
 
     def alterar_perfil_usuario(self, caminho, login):
         """Altera caminho da foto de perfil do usuario"""
         cursor = self.db.get_cursor()
         cursor.execute("""UPDATE usuario SET perfil_path=%s where login=%s""",(caminho, login))
         self.db.commit()
+        self.db.close()
 
     def buscar_senha_por_login(self, login):
         """Busca o hash da senha de um usuário pelo login"""
@@ -147,13 +153,16 @@ class UsuarioRepository:
             (login,)
         )
         row = cursor.fetchone()
-        return row["senha"].encode("utf-8") if row else None          
+        result = row["senha"].encode("utf-8") if row else None
+        self.db.close()
+        return result          
     
     def buscar_info_usuario(self, login):
         """Busca informações básicas do usuário"""
         cursor = self.db.get_cursor()
         cursor.execute("SELECT nome, adulto, descricao, perfil_path FROM usuario WHERE login=%s", (login,))
         res = cursor.fetchone()
+        self.db.close()
         return res
     
     def associar_generos_usuario(self, user_id, generos_ids):
@@ -181,9 +190,11 @@ class UsuarioRepository:
                     )
             
             self.db.commit()
+            self.db.close()
             
         except Exception as e:
-            self.db.rollback()  
+            self.db.rollback()
+            self.db.close()
             raise e  
     
     def get_feed_page(self, user_id, genero_id):
@@ -196,6 +207,7 @@ class UsuarioRepository:
         
         row = cursor.fetchone()
         if row is not None:
+            self.db.close()
             return row
         
         # Se não existir, cria registro com página 1
@@ -205,6 +217,7 @@ class UsuarioRepository:
         """, (user_id, genero_id))
         
         self.db.commit()
+        self.db.close()
         return 1
     
     def avancar_feed_page(self, user_id, genero_id):
@@ -216,6 +229,7 @@ class UsuarioRepository:
             WHERE login = %s AND id_genero = %s
         """, (user_id, genero_id))
         self.db.commit()
+        self.db.close()
         
     def adicionar_amizade(self, user_atual, user_amigo):
         """Adiciona um amigo para o usuário atual"""
@@ -229,12 +243,15 @@ class UsuarioRepository:
                 cursor.execute(
                     "INSERT INTO usuario_amigo(login, login_amigo) values (%s,%s)",(user_atual,user_amigo))
                 self.db.commit()
+                self.db.close()
                 return [True, 'usuário inserido']
             except:
                 self.db.rollback()
+                self.db.close()
                 return [False, 'vocês já são amigos']
                 
         else:
+            self.db.close()
             return [False, 'amigo inexistente']
         
     def remover_amizade(self, user_atual, user_amigo):
@@ -242,6 +259,7 @@ class UsuarioRepository:
         cursor = self.db.get_cursor()
         cursor.execute(
             "DELETE FROM usuario_amigo WHERE login=%s AND login_amigo=%s",(user_atual,user_amigo))
+        self.db.close()
        
     def lista_amigos(self, user_atual):
         """Lista os amigos do usuário atual"""
@@ -249,6 +267,7 @@ class UsuarioRepository:
         cursor.execute(
             "SELECT ua.login_amigo, u.nome, u.descricao, u.perfil_path FROM usuario_amigo AS ua JOIN usuario AS u ON u.login=ua.login_amigo WHERE ua.login=%s",(user_atual,))
         lista = cursor.fetchall()
+        self.db.close()
         return lista
     
     def filmes_em_comum(self, user_atual, user_amigo):
@@ -272,5 +291,5 @@ class UsuarioRepository:
         
         for r in res: lista.append(r['id_filme'])
         
-
+        self.db.close()
         return lista

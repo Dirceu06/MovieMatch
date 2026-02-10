@@ -17,6 +17,7 @@ class GeneroRepository:
             )
         """)
         self.db.commit()
+        self.db.close()
     
     def carregar_generos_tmdb(self):
         """Carrega gêneros do TMDb para o banco local"""
@@ -30,13 +31,16 @@ class GeneroRepository:
             )
         
         self.db.commit()
+        self.db.close()
         return generos
     
     def buscar_todos(self):
         """Busca todos os gêneros do banco"""
         cursor = self.db.get_cursor()
         cursor.execute("SELECT * FROM genero")
-        return cursor.fetchall()
+        result = cursor.fetchall()
+        self.db.close()
+        return result
     
     def buscar_por_usuario(self, user_id):
         """Busca gêneros associados a um usuário"""
@@ -45,7 +49,10 @@ class GeneroRepository:
                 "SELECT id_genero FROM usuario_genero WHERE login = %s",
                 (user_id,)
             )
-            return [row['id_genero'] for row in cursor.fetchall()]
+            result = [row['id_genero'] for row in cursor.fetchall()]
+        
+        self.db.close()
+        return result
     
     def buscar_por_filme(self,filme_id):
         """Busca gêneros associados a um filme"""
