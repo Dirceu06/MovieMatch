@@ -26,7 +26,7 @@ class AuthService:
     def _hash_senha(self, senha: str) -> bytes:
         """Gera um hash seguro para a senha"""
         if not senha or len(senha) < 6:
-            raise ValueError("Senha inválida")
+            raise ValueError("Senha deve ter ao menos 6 caracteres")
 
         senha_bytes = senha.encode("utf-8")
         return bcrypt.hashpw(senha_bytes, bcrypt.gensalt())
